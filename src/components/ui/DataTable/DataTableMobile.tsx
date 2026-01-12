@@ -71,7 +71,7 @@ export function DataTableMobile<T extends Record<string, unknown>>({
           <div className="space-y-2">
             {columns.map(column => (
               <div
-                key={column.key}
+                key={column.key as string}
                 className="flex justify-between items-start"
               >
                 <span className="text-sm font-medium text-gray-500 w-1/3">
@@ -80,7 +80,7 @@ export function DataTableMobile<T extends Record<string, unknown>>({
                 <span className="text-sm text-gray-900 w-2/3 text-right">
                   {column.render
                     ? column.render(row[column.key], row, rowIndex)
-                    : row[column.key]}
+                    : String(row[column.key] ?? '')}
                 </span>
               </div>
             ))}
