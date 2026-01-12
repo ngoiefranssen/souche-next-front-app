@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "title": "JULIA",
+    "welcome": "Bonjour, Content de vous revoir",
+    "subtitle": "Entrez vos identifiants pour continuer",
+    "googleSignIn": "Se connecter avec Google",
+    "or": "OU",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Adresse email / Nom d'utilisateur",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié?",
+    "signIn": "Se connecter",
+    "signingIn": "Connexion en cours...",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "signUp": "S'inscrire",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "bySigningIn": "En vous connectant, vous acceptez nos",
+    "and": "et",
+    "emailRequired": "L'email est requis",
+    "invalidEmail": "Veuillez entrer une adresse email valide",
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "errorOccurred": "Une erreur est survenue"
+  }
+}
