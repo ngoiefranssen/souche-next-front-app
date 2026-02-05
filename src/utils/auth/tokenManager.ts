@@ -33,13 +33,6 @@ export const setAuthToken = (
   const cookieString = `auth-token=${token}; path=/; max-age=${maxAge}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
 
   document.cookie = cookieString;
-
-  console.log('[TokenManager] Cookie set:', {
-    token: token.substring(0, 20) + '...',
-    maxAge,
-    isSecure,
-    allCookies: document.cookie,
-  });
 };
 
 /**
@@ -50,5 +43,4 @@ export const removeAuthToken = (): void => {
 
   document.cookie =
     'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
-  console.log('[TokenManager] Cookie removed');
 };
