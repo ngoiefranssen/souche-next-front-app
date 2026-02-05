@@ -9,7 +9,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.name || 'User'}!
+          Welcome back, {user?.firstName || user?.username || 'User'}!
         </h1>
         <p className="text-gray-600 mt-2">
           Here&apos;s what&apos;s happening with your courses today.

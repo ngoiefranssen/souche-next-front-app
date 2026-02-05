@@ -26,17 +26,27 @@ export default async function middleware(request: NextRequest) {
     publicRoutes.map(route => `/${locale}${route}`)
   );
 
-  const isPublicRoute = publicPatterns.some(
-    pattern => pathname.startsWith(pattern) || pathname === '/'
+  const isPublicRoute = publicPatterns.some(pattern =>
+    pathname.startsWith(pattern)
   );
+
+  // Vérifier l'authentification - chercher soit auth-token soit sessionId
+  const authToken = request.cookies.get('auth-token')?.value;
+  const sessionId = request.cookies.get('sessionId')?.value;
+  const token = authToken || sessionId;
+
+  // Si l'utilisateur est déjà connecté et tente d'accéder à une route publique, rediriger vers le dashboard
+  if (isPublicRoute && token) {
+    const localeMatch = pathname.match(/^\/(en|fr|ar)/);
+    const locale = localeMatch ? localeMatch[1] : defaultLocale;
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
 
   if (isPublicRoute) {
     return intlResponse || NextResponse.next();
   }
 
-  // Vérifier l'authentification
-  const token = request.cookies.get('auth-token')?.value;
-
+  // Vérifier l'authentification pour les routes protégées
   if (!token) {
     const localeMatch = pathname.match(/^\/(en|fr|ar)/);
     const locale = localeMatch ? localeMatch[1] : defaultLocale;
@@ -50,6 +60,6 @@ export const config = {
   matcher: [
     '/',
     '/(en|fr|ar)/:path*',
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api).*)',
   ],
 };

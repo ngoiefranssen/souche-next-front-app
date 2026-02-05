@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { CustomMiddleware } from './chain';
-import { locales } from '../i18n/i18n.config';
+import { locales } from '@/i18n/i18n.config';
+import { ENDPOINTS } from '@/lib/endpoints/auth/auth';
 
 export function withAuthMiddleware(
   middleware: CustomMiddleware
@@ -15,11 +16,9 @@ export function withAuthMiddleware(
 
     // Routes publiques (avec préfixes de locale)
     const publicRoutes = [
-      '/login',
-      '/register',
-      '/forgot-password',
-      '/api/auth/login',
-      '/api/auth/register',
+      ENDPOINTS.AUTH.LOGIN,
+      ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      ENDPOINTS.AUTH.RESET_PASSWORD,
     ];
 
     // Construire les patterns avec locales
@@ -29,7 +28,7 @@ export function withAuthMiddleware(
 
     // Vérifier si la route est publique
     const isPublicRoute = publicPatterns.some(
-      pattern => pathname.startsWith(pattern) || pathname === '/'
+      pattern => pathname.startsWith(pattern) || pathname === '/dashborad'
     );
 
     if (isPublicRoute) {
@@ -52,8 +51,7 @@ export function withAuthMiddleware(
       // Ici vous pouvez vérifier la validité du token JWT
       // Pour l'instant, on laisse passer si le token existe
       return middleware(request, event, response);
-    } catch (error) {
-      console.error('Auth middleware error:', error);
+    } catch {
       const locale =
         locales.find(loc => pathname.startsWith(`/${loc}/`)) || 'fr';
       return NextResponse.redirect(new URL(`/${locale}/login`, request.url));

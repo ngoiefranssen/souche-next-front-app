@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Bell,
-  Globe,
   Settings,
   Menu,
   User,
@@ -11,8 +10,13 @@ import {
   CreditCard,
   HelpCircle,
   Shield,
+  Languages,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocale } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { authAPI } from '@/lib/api/auth/auth';
+import { removeAuthToken } from '@/utils/auth/tokenManager';
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
@@ -21,15 +25,18 @@ interface DashboardHeaderProps {
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onMenuClick,
 }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [, setSelectedLang] = useState('English');
   const [currentDateTime, setCurrentDateTime] = useState('');
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'fr', name: 'français', flag: '🇫🇷' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
   ];
 
   // Mise à jour de l'heure en temps réel
@@ -47,7 +54,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         hour12: false,
       };
 
-      const formatter = new Intl.DateTimeFormat('fr-FR', options);
+      const formatter = new Intl.DateTimeFormat(
+        locale === 'fr' ? 'fr-FR' : 'en-US',
+        options
+      );
       const formattedDate = formatter.format(now);
 
       // Capitaliser le premier caractère
@@ -63,28 +73,54 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const interval = setInterval(updateDateTime, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [locale]);
 
   const handleLogout = async () => {
-    await logout();
     setShowUserMenu(false);
+
+    try {
+      // Appeler directement le backend pour le logout
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+
+    // Supprimer le token local et les données utilisateur
+    removeAuthToken();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-token');
+      localStorage.removeItem('user-data');
+    }
+
+    // Rediriger vers la page de login
+    window.location.href = `/${locale}/login`;
+  };
+
+  const handleLanguageChange = (langCode: string) => {
+    // Remplacer la locale dans le pathname
+    const segments = pathname.split('/');
+    segments[1] = langCode;
+    const newPathname = segments.join('/');
+
+    router.push(newPathname);
+    setShowLangMenu(false);
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-30">
+    <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
       <div className="h-full px-4 flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">
           {/* Menu burger (mobile) */}
           <button
             onClick={onMenuClick}
-            className="lg:hidden text-gray-500 hover:text-gray-700"
+            className="lg:hidden text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-all"
           >
             <Menu className="w-6 h-6" />
           </button>
 
           {/* Date et Heure */}
-          <div className="hidden md:flex items-center px-4 py-2 text-blue-600 text-sm font-medium">
+          <div className="hidden md:flex items-center px-4 py-2 text-gray-600 text-sm font-medium">
             {currentDateTime}
           </div>
         </div>
@@ -95,9 +131,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2"
             >
-              <Globe className="w-5 h-5 text-gray-600" />
+              <Languages className="w-5 h-5 text-gray-600" />
+              <span className="text-sm text-gray-700 font-medium hidden sm:block">
+                {languages.find(lang => lang.code === locale)?.name ||
+                  'Language'}
+              </span>
             </button>
 
             {showLangMenu && (
@@ -110,14 +150,15 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   {languages.map(lang => (
                     <button
                       key={lang.code}
-                      onClick={() => {
-                        setSelectedLang(lang.name);
-                        setShowLangMenu(false);
-                      }}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2"
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors ${
+                        locale === lang.code
+                          ? 'bg-[#2B6A8E]/10 text-[#2B6A8E]'
+                          : 'text-gray-700'
+                      }`}
                     >
-                      <span className="text-xl">{lang.flag}</span>
-                      <span className="text-sm text-gray-700">{lang.name}</span>
+                      <span className="text-xl">{lang?.flag}</span>
+                      <span className="text-sm font-medium">{lang?.name}</span>
                     </button>
                   ))}
                 </div>
@@ -137,8 +178,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
-                {user?.name?.charAt(0) || 'J'}
+              <div className="w-8 h-8 bg-[#2B6A8E] rounded-full flex items-center justify-center text-white font-medium">
+                {user?.firstName?.charAt(0) || user?.username?.charAt(0) || 'J'}
               </div>
             </button>
 
@@ -153,12 +194,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   {/* User Info Section */}
                   <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {user?.name?.charAt(0) || 'J'}
+                      <div className="w-10 h-10 bg-[#2B6A8E] rounded-full flex items-center justify-center text-white font-semibold">
+                        {user?.firstName?.charAt(0) ||
+                          user?.username?.charAt(0) ||
+                          'J'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 truncate">
-                          {user?.name || 'User'}
+                          {user?.firstName || user?.username || 'User'}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
                           {user?.email || ''}

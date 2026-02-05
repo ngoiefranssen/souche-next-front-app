@@ -22,7 +22,25 @@
     "emailRequired": "L'email est requis",
     "invalidEmail": "Veuillez entrer une adresse email valide",
     "passwordRequired": "Le mot de passe est requis",
-    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
-    "errorOccurred": "Une erreur est survenue"
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "errorOccurred": "Une erreur est survenue",
+    "welcomeBack": "Bonjour, content de vous revoir",
+    "loginPrompt": "Entrez vos identifiants pour continuer",
+    "email": "Email",
+    "emailInvalid": "Email invalide",
+    "password": "Mot de passe",
+    "togglePassword": "Afficher le mot de passe",
+    "captchaRequired": "Veuillez compléter le CAPTCHA",
+    "invalidCredentials": "Identifiants invalides",
+    "tooManyAttempts": "Trop de tentatives, réessayez dans 30 s",
+    "loggingIn": "Connexion en cours…",
+    "login": "Se connecter"
+  },
+  "common": {
+    "logout": "Se déconnecter",
+    "loggingOut": "Déconnexion...",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "help": "Aide"
   }
 }

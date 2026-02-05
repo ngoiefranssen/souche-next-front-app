@@ -22,7 +22,25 @@
     "emailRequired": "Email is required",
     "invalidEmail": "Please enter a valid email",
     "passwordRequired": "Password is required",
-    "passwordTooShort": "Password must be at least 6 characters",
-    "errorOccurred": "An error occurred"
+    "passwordTooShort": "Password must be at least 8 characters",
+    "errorOccurred": "An error occurred",
+    "welcomeBack": "Hi, Welcome Back",
+    "loginPrompt": "Enter your credentials to continue",
+    "email": "Email",
+    "emailInvalid": "Invalid email",
+    "password": "Password",
+    "togglePassword": "Toggle password visibility",
+    "captchaRequired": "Please complete the CAPTCHA",
+    "invalidCredentials": "Invalid credentials",
+    "tooManyAttempts": "Too many attempts, try again in 30s",
+    "loggingIn": "Signing in...",
+    "login": "Sign In"
+  },
+  "common": {
+    "logout": "Logout",
+    "loggingOut": "Logging out...",
+    "settings": "Settings",
+    "profile": "Profile",
+    "help": "Help"
   }
 }

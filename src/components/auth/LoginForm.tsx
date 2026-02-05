@@ -1,120 +1,185 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
+
+import { LoginCredentials, authAPI } from '@/lib/api/auth/auth';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { setAuthToken } from '@/utils/auth/tokenManager';
 
 export default function LoginForm() {
+  const t = useTranslations('auth');
+  const locale = useLocale();
+
+  /* ---------- États ---------- */
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof LoginCredentials, string>>
+  >({});
   const [isLoading, setIsLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockUntil, setLockUntil] = useState<number | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /* ---------- CSRF ---------- */
+  // useEffect(() => {
+  //   fetch('/api/csrf')
+  //     .then((r) => r.json())
+  //     .then((d) => setCsrf(d.token))
+  //     .catch(() => { });
+  // }, []);
+
+  /* ---------- Gestion verrou ---------- */
+  useEffect(() => {
+    if (lockUntil && Date.now() < lockUntil) {
+      const t = setTimeout(() => setLockUntil(null), lockUntil - Date.now());
+      return () => clearTimeout(t);
+    }
+  }, [lockUntil]);
+
+  /* ---------- Validation ---------- */
+  const validate = ({ email, password }: LoginCredentials) => {
+    const e: Partial<Record<keyof LoginCredentials, string>> = {};
+    if (!email) e.email = t('emailRequired');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      e.email = t('emailInvalid');
+
+    if (!password) e.password = t('passwordRequired');
+    else if (password.length < 8) e.password = t('passwordTooShort');
+    return e;
+  };
+
+  /* ---------- Soumission ---------- */
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const validation = validate({ email, password });
+    setErrors(validation);
+    if (Object.keys(validation).length) return;
+    if (lockUntil) return;
 
-    const newErrors = { email: '', password: '' };
+    setIsLoading(true);
 
-    if (!email) {
-      newErrors.email = 'Email requis';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email invalide';
-    }
+    try {
+      // Appeler directement le backend
+      const response = await authAPI.login({ email, password });
 
-    if (!password) {
-      newErrors.password = 'Mot de passe requis';
-    } else if (password.length < 6) {
-      newErrors.password =
-        'Le mot de passe doit contenir au moins 6 caractères';
-    }
+      // Stocker le token (accessToken du backend)
+      if (response.data?.accessToken) {
+        setAuthToken(response.data.accessToken);
 
-    setErrors(newErrors);
+        // Stocker aussi les données utilisateur
+        if (response.data?.user) {
+          localStorage.setItem('user-data', JSON.stringify(response.data.user));
+        }
+      }
 
-    if (!newErrors.email && !newErrors.password) {
-      setIsLoading(true);
-      console.log('Connexion avec:', { email, password, rememberMe });
+      // Attendre un peu pour s'assurer que le token est bien enregistré
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      // Forcer un rechargement complet pour que le middleware puisse lire le token
+      window.location.href = `/${locale}/dashboard`;
+    } catch {
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (newAttempts >= Number(process.env.NEXT_PUBLIC_MAX_ATTEMPTS ?? '5')) {
+        setLockUntil(
+          Date.now() +
+            Number(process.env.NEXT_PUBLIC_LOCKOUT_SEC ?? '30') * 1000
+        );
+        setErrors({ password: t('tooManyAttempts') });
+      } else {
+        setErrors({ password: t('invalidCredentials') });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  /* ---------- Rendu ---------- */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
+      {/* Language Selector - Top Right */}
+      <div className="absolute top-4 right-4">
+        <LanguageSelector />
+      </div>
+
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm bg-opacity-95">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-xl font-semibold text-purple-600 mb-1">
-              Bonjour, Content de vous revoir
-            </h2>
-            <p className="text-sm text-gray-500">
-              Entrez vos identifiants pour continuer
-            </p>
+            <h1 className="text-xl font-semibold text-[#2B6A8E]">
+              {t('welcomeBack')}
+            </h1>
+            <p className="text-sm text-gray-500">{t('loginPrompt')}</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form noValidate onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
             <div className="space-y-2">
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email
+                {t('email')}
               </label>
               <input
                 id="email"
-                type="text"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="Adresse email / Nom d'utilisateur"
-                className={`
-                  w-full px-4 py-3 border rounded-lg
-                  bg-white text-gray-900
-                  placeholder-gray-400
-                  focus:outline-none focus:ring-2 transition-all duration-200
-                  ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'}
-                `}
-                disabled={isLoading}
+                type="email"
                 autoComplete="email"
-                style={{ color: '#111827' }}
+                value={email}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEmail(e.target.value.trim())
+                }
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
+                disabled={isLoading}
+                className={`w-full px-4 py-3 bg-white border text-black rounded-lg focus:outline-none focus:ring-2 transition-all
+                  ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-[#2B6A8E]'}`}
               />
               {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                <p
+                  id="email-error"
+                  role="alert"
+                  className="text-red-500 text-xs"
+                >
+                  {errors.email}
+                </p>
               )}
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Mot de passe
+                {t('password')}
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className={`
-                    w-full px-4 py-3 pr-10 border rounded-lg
-                    bg-white text-gray-900
-                    placeholder-gray-400
-                    focus:outline-none focus:ring-2 transition-all duration-200
-                    ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'}
-                  `}
-                  disabled={isLoading}
                   autoComplete="current-password"
-                  style={{ color: '#111827' }}
+                  value={password}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setPassword(e.target.value)
+                  }
+                  aria-invalid={!!errors.password}
+                  aria-describedby={
+                    errors.password ? 'password-error' : undefined
+                  }
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 pr-10 bg-white border text-black rounded-lg focus:outline-none focus:ring-2 transition-all
+                    ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-[#2B6A8E]'}`}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
+                  onClick={() => setShowPassword(p => !p)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                  aria-label={t('togglePassword')}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -124,47 +189,49 @@ export default function LoginForm() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                <p
+                  id="password-error"
+                  role="alert"
+                  className="text-red-500 text-xs"
+                >
+                  {errors.password}
+                </p>
               )}
             </div>
 
+            {/* Remember me + Forgot */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center space-x-2 cursor-pointer group">
+              <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={e => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
                   disabled={isLoading}
+                  className="w-4 h-4 text-[#2B6A8E] border-gray-300 rounded focus:ring-[#2B6A8E]"
                 />
-                <span className="text-sm text-gray-700 group-hover:text-gray-900">
-                  Se souvenir de moi
-                </span>
+                <span className="text-sm text-gray-700">{t('rememberMe')}</span>
               </label>
-
               <Link
                 href="/forgot-password"
-                className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                className="text-sm font-medium text-[#2B6A8E] hover:text-[#255D7E]"
               >
-                Mot de passe oublié?
+                {t('forgotPassword')}
               </Link>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading}
-              className={`
-                w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-lg font-medium
-                hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-                transition-all duration-200 shadow-lg shadow-purple-500/30
-                ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:shadow-purple-500/40'}
-              `}
+              disabled={isLoading || !!lockUntil}
+              className={`w-full bg-[#2B6A8E] text-white py-3 rounded-lg font-medium
+                hover:bg-[#255D7E] focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-offset-2
+                transition-all shadow-lg
+                ${isLoading || lockUntil ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'}`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                   >
@@ -175,17 +242,17 @@ export default function LoginForm() {
                       r="10"
                       stroke="currentColor"
                       strokeWidth="4"
-                    ></circle>
+                    />
                     <path
                       className="opacity-75"
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                    />
                   </svg>
-                  Connexion en cours...
+                  {t('loggingIn')}
                 </span>
               ) : (
-                'Se connecter'
+                t('login')
               )}
             </button>
           </form>

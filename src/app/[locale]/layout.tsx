@@ -4,6 +4,7 @@ import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { AuthProvider } from '@/contexts/AuthContext';
+import ConditionalLayout from '@/components/Layout/ConditionalLayout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +30,9 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

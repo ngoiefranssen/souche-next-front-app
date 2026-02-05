@@ -2,14 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { authAPI, LoginCredentials } from '@/lib/api/auth/auth';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-}
+import { authAPI, LoginCredentials, User } from '@/lib/api/auth/auth';
+import { apiClient } from '@/lib/api/client';
 
 interface AuthContextType {
   user: User | null;
@@ -34,10 +28,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const checkAuthStatus = async () => {
     try {
-      const userData = await authAPI.getCurrentUser();
-      setUser(userData);
+      // Vérifier si on a un token dans les cookies
+      const cookies = document.cookie;
+      const hasToken = cookies.includes('auth-token=');
+
+      if (!hasToken) {
+        setUser(null);
+        localStorage.removeItem('user-data');
+        setIsLoading(false);
+        return;
+      }
+
+      // Essayer d'appeler le backend pour récupérer les données à jour
+      try {
+        const userData = await authAPI.getCurrentUser();
+
+        // Mettre à jour localStorage avec les données fraîches
+        localStorage.setItem('user-data', JSON.stringify(userData));
+        setUser(userData);
+      } catch (apiError) {
+        console.error('[AuthContext] Failed to fetch user:', apiError);
+
+        // En cas d'erreur, essayer de charger depuis localStorage comme fallback
+        const storedUser = localStorage.getItem('user-data');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          setUser(null);
+        }
+      }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('[AuthContext] Auth check failed:', error);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -47,11 +68,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (credentials: LoginCredentials) => {
     try {
       const response = await authAPI.login(credentials);
-      setUser(response.user);
+      setUser(response.data.user);
 
-      // Stocker le token dans localStorage ou cookies
+      // Stocker le token et l'utilisateur dans localStorage
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth-token', response.token);
+        localStorage.setItem('auth-token', response.data.accessToken);
+        localStorage.setItem('user-data', JSON.stringify(response.data.user));
       }
 
       router.push('/dashboard');
@@ -66,8 +88,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await authAPI.logout();
       setUser(null);
 
+      // Supprimer le token des en-têtes
+      apiClient.removeAuthToken();
+
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-token');
+        localStorage.removeItem('user-data');
       }
 
       router.push('/login');

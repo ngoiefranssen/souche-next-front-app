@@ -1,4 +1,5 @@
 import { API_CONFIG } from './config';
+import { getAuthToken } from '@/utils/auth/tokenManager';
 
 interface FetchOptions extends RequestInit {
   retries?: number;
@@ -19,23 +20,37 @@ class ApiClient {
     retries = API_CONFIG.RETRIES
   ): Promise<Response> {
     try {
+      // Récupérer le token depuis les cookies
+      const token = getAuthToken();
+      const authHeaders: Record<string, string> = {};
+
+      if (token) {
+        authHeaders.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
         ...options,
         headers: {
           ...this.headers,
-          ...options.headers,
+          ...authHeaders,
+          ...options?.headers,
         },
         credentials: 'include',
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ApiClient] Request failed:', {
+          url,
+          status: response.status,
+          error: errorText,
+        });
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       return response;
     } catch (error) {
       if (retries > 0) {
-        console.warn(`Retrying request... (${retries} retries left)`);
         await new Promise(resolve => setTimeout(resolve, 1000));
         return this.fetchWithRetry(url, options, retries - 1);
       }
