@@ -46,9 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Mettre à jour localStorage avec les données fraîches
         localStorage.setItem('user-data', JSON.stringify(userData));
         setUser(userData);
-      } catch (apiError) {
-        console.error('[AuthContext] Failed to fetch user:', apiError);
-
+      } catch {
         // En cas d'erreur, essayer de charger depuis localStorage comme fallback
         const storedUser = localStorage.getItem('user-data');
         if (storedUser) {
@@ -57,9 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setUser(null);
         }
       }
-    } catch (error) {
-      console.error('[AuthContext] Auth check failed:', error);
-      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -72,13 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Stocker le token et l'utilisateur dans localStorage
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth-token', response.data.accessToken);
+        localStorage.setItem('auth-token', response.data?.accessToken);
         localStorage.setItem('user-data', JSON.stringify(response.data.user));
       }
 
       router.push('/dashboard');
     } catch (error) {
-      console.error('Login failed:', error);
       throw error;
     }
   };
@@ -98,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       router.push('/login');
     } catch (error) {
-      console.error('Logout failed:', error);
+      throw error;
     }
   };
 
