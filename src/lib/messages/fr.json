@@ -42,5 +42,58 @@
     "settings": "Paramètres",
     "profile": "Profil",
     "help": "Aide"
+  },
+  "breadcrumb": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "roles": "Rôles",
+    "profiles": "Profils",
+    "employmentStatus": "Statuts d'emploi",
+    "permissions": "Permissions",
+    "audit": "Audit",
+    "rewards": "Récompenses",
+    "create": "Créer",
+    "edit": "Modifier",
+    "assign": "Assigner"
+  },
+  "errors": {
+    "network": {
+      "timeout": "La requête a pris trop de temps. Veuillez réessayer.",
+      "offline": "Vous êtes hors ligne. Vérifiez votre connexion internet.",
+      "failed": "Impossible de se connecter au serveur. Vérifiez votre connexion."
+    },
+    "auth": {
+      "invalidCredentials": "Email ou mot de passe incorrect.",
+      "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
+      "unauthorized": "Vous devez être connecté pour accéder à cette ressource."
+    },
+    "permission": {
+      "denied": "Accès refusé. Vous n'avez pas les permissions nécessaires."
+    },
+    "validation": {
+      "emailTaken": "Cet email est déjà utilisé.",
+      "usernameTaken": "Ce nom d'utilisateur est déjà utilisé.",
+      "invalidFormat": "Le format des données est invalide.",
+      "requiredField": "Ce champ est requis."
+    },
+    "resource": {
+      "notFound": "Ressource non trouvée.",
+      "conflict": "Cette ressource existe déjà.",
+      "inUse": "Cette ressource est utilisée et ne peut pas être supprimée."
+    },
+    "server": {
+      "error": "Erreur serveur. Veuillez réessayer plus tard.",
+      "unavailable": "Le service est temporairement indisponible."
+    },
+    "unknown": {
+      "error": "Une erreur inattendue est survenue."
+    },
+    "boundary": {
+      "title": "Une erreur est survenue",
+      "message": "Nous sommes désolés, une erreur inattendue s'est produite. Veuillez réessayer.",
+      "retry": "Réessayer",
+      "home": "Retour à l'accueil"
+    }
   }
 }

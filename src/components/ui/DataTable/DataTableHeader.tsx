@@ -39,7 +39,14 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
               type="checkbox"
               checked={allSelected}
               onChange={e => onSelectAll(e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              onKeyDown={e => {
+                if (e.key === ' ') {
+                  e.preventDefault();
+                  onSelectAll(!allSelected);
+                }
+              }}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-[#2B6A8E]"
+              aria-label="Sélectionner toutes les lignes"
             />
           </th>
         )}
@@ -58,7 +65,14 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
             {column.sortable ? (
               <button
                 onClick={() => onSort(column.key)}
-                className="flex items-center space-x-1 hover:text-gray-700 transition"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSort(column.key);
+                  }
+                }}
+                className="flex items-center space-x-1 hover:text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] rounded px-1"
+                aria-label={`Trier par ${column.label}`}
               >
                 <span>{column.label}</span>
                 {getSortIcon(column.key)}

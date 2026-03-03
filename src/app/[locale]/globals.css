@@ -1,3 +1,6 @@
+/* Keyboard Navigation Styles */
+@import '../../styles/keyboard-navigation.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

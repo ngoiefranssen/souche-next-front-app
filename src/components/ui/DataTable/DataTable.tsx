@@ -147,32 +147,36 @@ export function DataTable<T extends Record<string, unknown>>({
           onSelectRow={handleSelectRow}
         />
       ) : (
-        /* Vue Desktop (Table) */
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <DataTableHeader
-              columns={columns}
-              sortConfig={sortConfig}
-              onSort={handleSort}
-              selectable={selectable}
-              onSelectAll={handleSelectAll}
-              allSelected={
-                selectedRows.size === processedData.length &&
-                processedData.length > 0
-              }
-            />
-            <DataTableBody
-              data={processedData}
-              columns={columns}
-              loading={loading}
-              emptyMessage={emptyMessage}
-              onRowClick={onRowClick}
-              actions={actions}
-              selectable={selectable}
-              selectedRows={selectedRows}
-              onSelectRow={handleSelectRow}
-            />
-          </table>
+        /* Vue Desktop (Table) - Scrollable horizontalement sur petits écrans */
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <DataTableHeader
+                  columns={columns}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                  selectable={selectable}
+                  onSelectAll={handleSelectAll}
+                  allSelected={
+                    selectedRows.size === processedData.length &&
+                    processedData.length > 0
+                  }
+                />
+                <DataTableBody
+                  data={processedData}
+                  columns={columns}
+                  loading={loading}
+                  emptyMessage={emptyMessage}
+                  onRowClick={onRowClick}
+                  actions={actions}
+                  selectable={selectable}
+                  selectedRows={selectedRows}
+                  onSelectRow={handleSelectRow}
+                />
+              </table>
+            </div>
+          </div>
         </div>
       )}
 

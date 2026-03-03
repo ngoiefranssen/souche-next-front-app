@@ -2,22 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Home,
-  Users,
-  UserCog,
-  Shield,
-  History,
-  Bell,
-  Forward,
-  TrendingUp,
-  Wrench,
-  MessageSquare,
-  Building2,
-  Settings,
-  ChevronDown,
-  ChevronRight,
-} from 'lucide-react';
+import { Users, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface SubMenuItem {
@@ -29,78 +14,15 @@ interface SubMenuItem {
 
 const menuItems: SubMenuItem[] = [
   {
-    label: 'Reseller Overview',
-    href: '/rewards/reseller-overview',
-    icon: <Home className="w-4 h-4" />,
-  },
-  {
     label: 'Client List',
     href: '/rewards/client-list',
     icon: <Users className="w-4 h-4" />,
   },
   {
-    label: 'Reseller Users',
-    href: '/rewards/reseller-users',
-    icon: <UserCog className="w-4 h-4" />,
-  },
-  {
-    label: 'Reseller Roles & Permissions',
-    href: '/rewards/reseller-roles',
-    icon: <Shield className="w-4 h-4" />,
-  },
-  {
-    label: 'Client Roles & Permissions',
-    href: '/rewards/client-roles',
-    icon: <Shield className="w-4 h-4" />,
-  },
-  {
-    label: 'Login, Email, Sms History',
-    href: '/rewards/history',
-    icon: <History className="w-4 h-4" />,
-    children: [
-      { label: 'Login History', href: '/rewards/history/login' },
-      { label: 'Email History', href: '/rewards/history/email' },
-      { label: 'SMS History', href: '/rewards/history/sms' },
-    ],
-  },
-  {
-    label: 'Client Payment Reminders',
-    href: '/rewards/payment-reminders',
-    icon: <Bell className="w-4 h-4" />,
-  },
-  {
-    label: 'Data Forwarding',
-    href: '/rewards/data-forwarding',
-    icon: <Forward className="w-4 h-4" />,
-  },
-  {
-    label: 'High Asset Usage',
-    href: '/rewards/high-asset-usage',
-    icon: <TrendingUp className="w-4 h-4" />,
-  },
-  {
-    label: 'Tools',
-    href: '/rewards/tools',
-    icon: <Wrench className="w-4 h-4" />,
-  },
-  {
     label: 'GPRS & SMS Commands',
     href: '/rewards/gprs-sms',
     icon: <MessageSquare className="w-4 h-4" />,
-    children: [
-      { label: 'GPRS Commands', href: '/rewards/gprs-sms/gprs' },
-      { label: 'SMS Commands', href: '/rewards/gprs-sms/sms' },
-    ],
-  },
-  {
-    label: 'Manage Sub-Resellers',
-    href: '/rewards/sub-resellers',
-    icon: <Building2 className="w-4 h-4" />,
-  },
-  {
-    label: 'Reseller Settings',
-    href: '/rewards/settings',
-    icon: <Settings className="w-4 h-4" />,
+    children: [{ label: 'GPRS Commands', href: '/rewards/gprs-sms/gprs' }],
   },
 ];
 

@@ -78,7 +78,14 @@ export function DataTableBody<T extends Record<string, unknown>>({
                   e.stopPropagation();
                   onSelectRow(rowIndex, e.target.checked);
                 }}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                onKeyDown={e => {
+                  if (e.key === ' ') {
+                    e.preventDefault();
+                    onSelectRow(rowIndex, !selectedRows.has(rowIndex));
+                  }
+                }}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-[#2B6A8E]"
+                aria-label={`Sélectionner la ligne ${rowIndex + 1}`}
               />
             </td>
           )}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { DashboardHeader } from './DashboardHeader';
+import { Breadcrumb } from './Breadcrumb';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -28,7 +29,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {/* Header */}
         <DashboardHeader onMenuClick={handleMenuClick} />
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-1">{children}</main>
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+          {/* Breadcrumb */}
+          <Breadcrumb />
+          {children}
+        </main>
       </div>
     </div>
   );

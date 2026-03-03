@@ -1,0 +1,438 @@
+{
+  "sidebar": {
+    "users": "Users",
+    "roles": "Roles",
+    "profiles": "Profiles",
+    "employmentStatus": "Employment Status",
+    "permissions": "Permissions",
+    "audit": "Audit",
+    "rewards": "Rewards",
+    "settings": "Settings",
+    "menu": "Menu"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "profiles": "Profiles",
+    "employmentStatus": "Employment Status",
+    "permissions": "Permissions",
+    "audit": "Audit",
+    "create": "Create",
+    "edit": "Edit",
+    "assign": "Assign"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "logout": "Logout",
+    "loggingOut": "Logging out...",
+    "profile": "My Profile",
+    "language": "Language",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "loginPrompt": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "forgotPassword": "Forgot password?",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email format",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "invalidCredentials": "Invalid email or password",
+    "tooManyAttempts": "Too many attempts. Please try again later.",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "unauthorized": "Unauthorized"
+  },
+  "users": {
+    "title": "User Management",
+    "list": "User List",
+    "create": "Create User",
+    "edit": "Edit User",
+    "delete": "Delete User",
+    "deleteConfirm": "Are you sure you want to delete this user?",
+    "deleteSuccess": "User deleted successfully",
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "fields": {
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "profilePhoto": "Profile Photo",
+      "salary": "Salary",
+      "hireDate": "Hire Date",
+      "employmentStatus": "Employment Status",
+      "profile": "Profile",
+      "fullName": "Full Name",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "email": "example@email.com",
+      "username": "john.doe",
+      "password": "Minimum 8 characters",
+      "firstName": "John",
+      "lastName": "Doe",
+      "phone": "+1234567890",
+      "salary": "50000",
+      "searchUsers": "Search by name, email or username..."
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "usernameRequired": "Username is required",
+      "usernameMin": "Username must be at least 3 characters",
+      "usernameMax": "Username cannot exceed 50 characters",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 8 characters",
+      "firstNameRequired": "First name is required",
+      "firstNameMin": "First name must be at least 2 characters",
+      "lastNameRequired": "Last name is required",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "phoneRequired": "Phone is required",
+      "phoneInvalid": "Invalid phone format",
+      "salaryRequired": "Salary is required",
+      "salaryPositive": "Salary must be positive",
+      "hireDateRequired": "Hire date is required",
+      "employmentStatusRequired": "Employment status is required",
+      "profileRequired": "Profile is required",
+      "photoMaxSize": "Photo must not exceed 5 MB",
+      "photoInvalidType": "Unsupported file format. Use JPG, PNG or GIF"
+    },
+    "filters": {
+      "all": "All Users",
+      "byProfile": "By Profile",
+      "byStatus": "By Status",
+      "search": "Search"
+    }
+  },
+  "roles": {
+    "title": "Role Management",
+    "list": "Role List",
+    "create": "Create Role",
+    "edit": "Edit Role",
+    "delete": "Delete Role",
+    "deleteConfirm": "Are you sure you want to delete this role?",
+    "deleteWarning": "This role is used by {count} profile(s). You cannot delete it.",
+    "deleteSuccess": "Role deleted successfully",
+    "createSuccess": "Role created successfully",
+    "updateSuccess": "Role updated successfully",
+    "fields": {
+      "label": "Label",
+      "description": "Description",
+      "profileCount": "Profile Count",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "label": "Administrator",
+      "description": "Role description...",
+      "searchRoles": "Search role..."
+    },
+    "validation": {
+      "labelRequired": "Label is required",
+      "labelMin": "Label must be at least 2 characters",
+      "labelMax": "Label cannot exceed 100 characters",
+      "labelUnique": "This label already exists",
+      "descriptionMax": "Description cannot exceed 500 characters"
+    }
+  },
+  "profiles": {
+    "title": "Profile Management",
+    "list": "Profile List",
+    "create": "Create Profile",
+    "edit": "Edit Profile",
+    "delete": "Delete Profile",
+    "deleteConfirm": "Are you sure you want to delete this profile?",
+    "deleteWarning": "This profile is used by {count} user(s). You cannot delete it.",
+    "deleteSuccess": "Profile deleted successfully",
+    "createSuccess": "Profile created successfully",
+    "updateSuccess": "Profile updated successfully",
+    "fields": {
+      "label": "Label",
+      "description": "Description",
+      "userCount": "User Count",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "label": "Manager",
+      "description": "Profile description...",
+      "searchProfiles": "Search profile..."
+    },
+    "validation": {
+      "labelRequired": "Label is required",
+      "labelMin": "Label must be at least 2 characters",
+      "labelMax": "Label cannot exceed 100 characters",
+      "descriptionMax": "Description cannot exceed 500 characters"
+    }
+  },
+  "employmentStatus": {
+    "title": "Employment Status Management",
+    "list": "Status List",
+    "create": "Create Status",
+    "edit": "Edit Status",
+    "delete": "Delete Status",
+    "deleteConfirm": "Are you sure you want to delete this status?",
+    "deleteWarning": "This status is used by {count} user(s). You cannot delete it.",
+    "deleteSuccess": "Status deleted successfully",
+    "createSuccess": "Status created successfully",
+    "updateSuccess": "Status updated successfully",
+    "fields": {
+      "label": "Label",
+      "description": "Description",
+      "userCount": "User Count",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "label": "Full-time",
+      "description": "Status description...",
+      "searchStatus": "Search status..."
+    },
+    "validation": {
+      "labelRequired": "Label is required",
+      "labelMin": "Label must be at least 2 characters",
+      "labelMax": "Label cannot exceed 100 characters",
+      "descriptionMax": "Description cannot exceed 500 characters"
+    }
+  },
+  "permissions": {
+    "title": "Permission Management",
+    "list": "Permission List",
+    "create": "Create Permission",
+    "edit": "Edit Permission",
+    "delete": "Delete Permission",
+    "assign": "Assign Permissions",
+    "deleteConfirm": "Are you sure you want to delete this permission?",
+    "deleteSuccess": "Permission deleted successfully",
+    "createSuccess": "Permission created successfully",
+    "updateSuccess": "Permission updated successfully",
+    "assignSuccess": "Permissions assigned successfully",
+    "revokeSuccess": "Permission revoked successfully",
+    "fields": {
+      "name": "Name",
+      "resource": "Resource",
+      "action": "Action",
+      "description": "Description",
+      "conditions": "ABAC Conditions",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "placeholders": {
+      "name": "users:create",
+      "resource": "users",
+      "action": "create",
+      "description": "Permission description...",
+      "conditions": "{ \"owner\": true }",
+      "searchPermissions": "Search permission..."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameFormat": "Required format: resource:action (e.g., users:create)",
+      "resourceRequired": "Resource is required",
+      "resourceMin": "Resource must be at least 2 characters",
+      "actionRequired": "Action is required",
+      "actionMin": "Action must be at least 2 characters",
+      "descriptionMax": "Description cannot exceed 500 characters",
+      "conditionsInvalid": "Invalid JSON format"
+    },
+    "assignment": {
+      "selectRole": "Select Role",
+      "rolePermissions": "Role Permissions",
+      "availablePermissions": "Available Permissions",
+      "assignedPermissions": "Assigned Permissions",
+      "noPermissions": "No permissions assigned"
+    },
+    "categories": {
+      "users": "Users",
+      "roles": "Roles",
+      "profiles": "Profiles",
+      "permissions": "Permissions",
+      "audit": "Audit",
+      "system": "System"
+    }
+  },
+  "audit": {
+    "title": "Audit Logs",
+    "list": "Log List",
+    "details": "Log Details",
+    "export": "Export to CSV",
+    "exportSuccess": "Export successful",
+    "fields": {
+      "id": "ID",
+      "userId": "User ID",
+      "username": "User",
+      "action": "Action",
+      "resource": "Resource",
+      "resourceId": "Resource ID",
+      "timestamp": "Date and Time",
+      "ipAddress": "IP Address",
+      "userAgent": "Browser",
+      "success": "Success",
+      "errorMessage": "Error Message",
+      "details": "Details"
+    },
+    "actions": {
+      "CREATE": "Create",
+      "READ": "Read",
+      "UPDATE": "Update",
+      "DELETE": "Delete",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout"
+    },
+    "filters": {
+      "all": "All Logs",
+      "byUser": "By User",
+      "byAction": "By Action",
+      "byResource": "By Resource",
+      "byStatus": "By Status",
+      "dateRange": "Date Range",
+      "from": "From",
+      "to": "To",
+      "success": "Success Only",
+      "failed": "Failed Only"
+    },
+    "stats": {
+      "title": "Statistics",
+      "totalLogs": "Total Logs",
+      "successRate": "Success Rate",
+      "topActions": "Top Actions",
+      "topResources": "Top Resources",
+      "topUsers": "Active Users"
+    }
+  },
+  "table": {
+    "pagination": {
+      "showing": "Showing {from} to {to} of {total} results",
+      "page": "Page {current} of {total}",
+      "rowsPerPage": "Rows per page",
+      "first": "First",
+      "last": "Last",
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "sort": {
+      "ascending": "Sort ascending",
+      "descending": "Sort descending",
+      "none": "No sorting"
+    },
+    "filter": {
+      "apply": "Apply",
+      "clear": "Clear",
+      "clearAll": "Clear All"
+    },
+    "noResults": "No results found",
+    "loading": "Loading data..."
+  },
+  "form": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "minLength": "Minimum {min} characters",
+    "maxLength": "Maximum {max} characters",
+    "min": "Minimum value: {min}",
+    "max": "Maximum value: {max}",
+    "email": "Invalid email format",
+    "url": "Invalid URL format",
+    "date": "Invalid date format",
+    "number": "Must be a number",
+    "integer": "Must be an integer",
+    "positive": "Must be positive",
+    "negative": "Must be negative",
+    "pattern": "Invalid format",
+    "unique": "This value already exists",
+    "fileSize": "File too large (max: {max})",
+    "fileType": "Unsupported file type",
+    "dragDrop": "Drag and drop a file here or click to select",
+    "selectFile": "Select File",
+    "removeFile": "Remove File",
+    "uploadProgress": "Upload: {progress}%"
+  },
+  "modal": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "confirmDelete": "Confirm Deletion",
+    "areYouSure": "Are you sure?",
+    "cannotUndo": "This action cannot be undone."
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "loading": "Loading..."
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "network": "Server connection error",
+    "timeout": "Request timed out",
+    "unauthorized": "Unauthorized. Please sign in again.",
+    "forbidden": {
+      "title": "Access Denied",
+      "message": "You do not have the necessary permissions to access this resource. If you believe this is an error, please contact your administrator.",
+      "goBack": "Go Back",
+      "goHome": "Go to Dashboard",
+      "help": "Need help? Contact technical support."
+    },
+    "notFound": "Resource not found",
+    "conflict": "Conflict: this resource is already in use",
+    "serverError": "Server error. Please try again later.",
+    "validationError": "Validation error",
+    "uploadError": "File upload error",
+    "deleteError": "Cannot delete this resource",
+    "updateError": "Cannot update this resource",
+    "createError": "Cannot create this resource",
+    "fetchError": "Cannot fetch data",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "tooManyRequests": "Too many requests. Please wait.",
+    "retry": "Retry",
+    "goBack": "Go Back"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "toggleSidebar": "Toggle sidebar",
+    "sortBy": "Sort by {column}",
+    "filterBy": "Filter by {field}",
+    "selectRow": "Select row",
+    "expandRow": "Expand row",
+    "collapseRow": "Collapse row",
+    "loading": "Loading",
+    "loadingComplete": "Loading complete"
+  }
+}

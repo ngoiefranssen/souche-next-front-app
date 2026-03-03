@@ -1,5 +1,13 @@
 /**
- * Utilitaires pour gérer les tokens d'authentification
+ * Utilitaires pour gérer les tokens d'authentification JWT
+ *
+ * SÉCURITÉ JWT:
+ * - Les tokens sont stockés dans des cookies non-httpOnly pour permettre l'accès
+ *   par le middleware Next.js et le client API
+ * - SameSite=Lax protège contre les attaques CSRF
+ * - Secure=true en production (HTTPS uniquement)
+ * - Les tokens sont automatiquement inclus dans toutes les requêtes API via le header Authorization
+ * - En cas d'expiration (401), l'utilisateur est automatiquement déconnecté
  */
 
 /**

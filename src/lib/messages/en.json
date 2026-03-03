@@ -42,5 +42,58 @@
     "settings": "Settings",
     "profile": "Profile",
     "help": "Help"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "profiles": "Profiles",
+    "employmentStatus": "Employment Status",
+    "permissions": "Permissions",
+    "audit": "Audit",
+    "rewards": "Rewards",
+    "create": "Create",
+    "edit": "Edit",
+    "assign": "Assign"
+  },
+  "errors": {
+    "network": {
+      "timeout": "The request timed out. Please try again.",
+      "offline": "You are offline. Check your internet connection.",
+      "failed": "Unable to connect to the server. Check your connection."
+    },
+    "auth": {
+      "invalidCredentials": "Invalid email or password.",
+      "sessionExpired": "Session expired. Please log in again.",
+      "unauthorized": "You must be logged in to access this resource."
+    },
+    "permission": {
+      "denied": "Access denied. You do not have the required permissions."
+    },
+    "validation": {
+      "emailTaken": "This email is already in use.",
+      "usernameTaken": "This username is already in use.",
+      "invalidFormat": "The data format is invalid.",
+      "requiredField": "This field is required."
+    },
+    "resource": {
+      "notFound": "Resource not found.",
+      "conflict": "This resource already exists.",
+      "inUse": "This resource is in use and cannot be deleted."
+    },
+    "server": {
+      "error": "Server error. Please try again later.",
+      "unavailable": "The service is temporarily unavailable."
+    },
+    "unknown": {
+      "error": "An unexpected error occurred."
+    },
+    "boundary": {
+      "title": "An error occurred",
+      "message": "We're sorry, an unexpected error occurred. Please try again.",
+      "retry": "Retry",
+      "home": "Back to home"
+    }
   }
 }

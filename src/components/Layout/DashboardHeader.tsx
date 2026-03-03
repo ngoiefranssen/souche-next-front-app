@@ -1,17 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Bell,
-  Settings,
-  Menu,
-  User,
-  LogOut,
-  CreditCard,
-  HelpCircle,
-  Shield,
-  Languages,
-} from 'lucide-react';
+import { Bell, Menu, User, LogOut, Languages, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
@@ -32,6 +22,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState('');
+  const langMenuRef = React.useRef<HTMLDivElement>(null);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -106,6 +98,47 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     setShowLangMenu(false);
   };
 
+  // Handle keyboard navigation for language menu
+  const handleLangMenuKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowLangMenu(false);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setShowLangMenu(!showLangMenu);
+    }
+  };
+
+  // Handle keyboard navigation for user menu
+  const handleUserMenuKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowUserMenu(false);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setShowUserMenu(!showUserMenu);
+    }
+  };
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        langMenuRef.current &&
+        !langMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowLangMenu(false);
+      }
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
       <div className="h-full px-4 flex items-center justify-between">
@@ -114,7 +147,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           {/* Menu burger (mobile) */}
           <button
             onClick={onMenuClick}
-            className="lg:hidden text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-all"
+            className="lg:hidden text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#2B6A8E]"
+            aria-label="Ouvrir le menu"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -128,10 +162,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {/* Right side */}
         <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Language selector */}
-          <div className="relative">
+          <div className="relative" ref={langMenuRef}>
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
-              className="px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2"
+              onKeyDown={handleLangMenuKeyDown}
+              className="px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#2B6A8E]"
+              aria-label="Sélectionner la langue"
+              aria-expanded={showLangMenu}
+              aria-haspopup="true"
             >
               <Languages className="w-5 h-5 text-gray-600" />
               <span className="text-sm text-gray-700 font-medium hidden sm:block">
@@ -146,16 +184,27 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   className="fixed inset-0 z-10"
                   onClick={() => setShowLangMenu(false)}
                 />
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                <div
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20"
+                  role="menu"
+                  aria-label="Menu de sélection de langue"
+                >
                   {languages.map(lang => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
-                      className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors ${
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleLanguageChange(lang.code);
+                        }
+                      }}
+                      className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-inset ${
                         locale === lang.code
                           ? 'bg-[#2B6A8E]/10 text-[#2B6A8E]'
                           : 'text-gray-700'
                       }`}
+                      role="menuitem"
                     >
                       <span className="text-xl">{lang?.flag}</span>
                       <span className="text-sm font-medium">{lang?.name}</span>
@@ -167,20 +216,28 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E]"
+            aria-label="Notifications"
+          >
             <Bell className="w-5 h-5 text-gray-600" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
           {/* User Avatar with Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              onKeyDown={handleUserMenuKeyDown}
+              className="flex items-center space-x-2 p-1 pr-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E]"
+              aria-label="Menu utilisateur"
+              aria-expanded={showUserMenu}
+              aria-haspopup="true"
             >
               <div className="w-8 h-8 bg-[#2B6A8E] rounded-full flex items-center justify-center text-white font-medium">
                 {user?.firstName?.charAt(0) || user?.username?.charAt(0) || 'J'}
               </div>
+              <ChevronDown className="w-4 h-4 text-gray-600 hidden sm:block" />
             </button>
 
             {/* User Dropdown Menu */}
@@ -190,7 +247,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   className="fixed inset-0 z-10"
                   onClick={() => setShowUserMenu(false)}
                 />
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-20">
+                <div
+                  className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-20"
+                  role="menu"
+                  aria-label="Menu utilisateur"
+                >
                   {/* User Info Section */}
                   <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
                     <div className="flex items-center space-x-3">
@@ -201,10 +262,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 truncate">
-                          {user?.firstName || user?.username || 'User'}
+                          {user?.firstName && user?.lastName
+                            ? `${user.firstName} ${user.lastName}`
+                            : user?.username || 'User'}
                         </p>
                         <p className="text-xs text-gray-500 truncate">
-                          {user?.email || ''}
+                          {user?.profile?.label || 'No role'}
                         </p>
                       </div>
                     </div>
@@ -214,45 +277,17 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   <nav className="py-1">
                     <button
                       onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setShowUserMenu(false);
+                        }
+                      }}
+                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-inset"
+                      role="menuitem"
                     >
                       <User className="w-4 h-4 mr-3" />
                       <span>Mon profil</span>
-                    </button>
-
-                    <button
-                      onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Settings className="w-4 h-4 mr-3" />
-                      <span>Paramètres du compte</span>
-                    </button>
-
-                    <button
-                      onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <CreditCard className="w-4 h-4 mr-3" />
-                      <span>Abonnement et facturation</span>
-                    </button>
-
-                    {/* Divider */}
-                    <div className="h-px bg-gray-200 my-1"></div>
-
-                    <button
-                      onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Shield className="w-4 h-4 mr-3" />
-                      <span>Confidentialité et sécurité</span>
-                    </button>
-
-                    <button
-                      onClick={() => setShowUserMenu(false)}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <HelpCircle className="w-4 h-4 mr-3" />
-                      <span>Aide et support</span>
                     </button>
 
                     {/* Divider */}
@@ -260,10 +295,17 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleLogout();
+                        }
+                      }}
+                      className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-inset"
+                      role="menuitem"
                     >
                       <LogOut className="w-4 h-4 mr-3" />
-                      <span>Se déconnecter</span>
+                      <span>Déconnexion</span>
                     </button>
                   </nav>
                 </div>

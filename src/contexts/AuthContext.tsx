@@ -4,6 +4,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI, LoginCredentials, User } from '@/lib/api/auth/auth';
 import { apiClient } from '@/lib/api/client';
+import {
+  initializeTokenRefresh,
+  stopTokenRefresh,
+} from '@/utils/auth/tokenRefresh';
+import {
+  startSessionTimeout,
+  stopMonitoring as stopSessionTimeout,
+} from '@/utils/auth/sessionTimeout';
+import { removeAuthToken } from '@/utils/auth/tokenManager';
 
 interface AuthContextType {
   user: User | null;
@@ -22,9 +31,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  // Check auth status only on mount
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  const handleSessionTimeout = useCallback(async () => {
+    console.log('[Auth] Session timeout - logging out user');
+
+    // Stop monitoring
+    stopTokenRefresh();
+    stopSessionTimeout();
+
+    // Clear auth data
+    setUser(null);
+    removeAuthToken();
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-token');
+      localStorage.removeItem('user-data');
+      localStorage.removeItem('user-permissions');
+      localStorage.removeItem('user-permissions-timestamp');
+
+      // Dispatch logout event
+      window.dispatchEvent(new CustomEvent('auth:logout'));
+
+      // Redirect to login with timeout reason
+      router.push('/login?reason=session-timeout');
+    }
+  }, [router]);
+
+  const handleSessionWarning = useCallback(() => {
+    console.log('[Auth] Session will expire soon');
+    // You can show a toast notification here if desired
+    // For now, just log it
+  }, []);
+
+  // Initialize token refresh and session timeout when user changes
+  useEffect(() => {
+    if (user) {
+      // Initialize token refresh monitoring
+      initializeTokenRefresh();
+
+      // Initialize session timeout monitoring
+      startSessionTimeout({
+        onTimeout: handleSessionTimeout,
+        onWarning: handleSessionWarning,
+      });
+    }
+
+    // Cleanup on unmount or when user changes
+    return () => {
+      stopTokenRefresh();
+      stopSessionTimeout();
+    };
+  }, [user, handleSessionTimeout, handleSessionWarning]);
 
   const checkAuthStatus = async () => {
     try {
@@ -71,6 +132,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem('user-data', JSON.stringify(response.data.user));
       }
 
+      // Initialize automatic token refresh
+      initializeTokenRefresh();
+
+      // Start session timeout monitoring
+      startSessionTimeout({
+        onTimeout: handleSessionTimeout,
+        onWarning: handleSessionWarning,
+      });
+
+      // Trigger permission refresh after successful login
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:login'));
+      }
+
       router.push('/dashboard');
     } catch (error) {
       throw error;
@@ -79,6 +154,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
+      // Stop token refresh monitoring
+      stopTokenRefresh();
+
+      // Stop session timeout monitoring
+      stopSessionTimeout();
+
       await authAPI.logout();
       setUser(null);
 
@@ -88,6 +169,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth-token');
         localStorage.removeItem('user-data');
+        // Clear permissions cache on logout
+        localStorage.removeItem('user-permissions');
+        localStorage.removeItem('user-permissions-timestamp');
+      }
+
+      // Trigger permission clear after logout
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:logout'));
       }
 
       router.push('/login');
