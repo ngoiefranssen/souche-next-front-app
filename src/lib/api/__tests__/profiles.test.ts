@@ -2,7 +2,7 @@
  * Unit tests for Profiles API service
  */
 
-import { profilesAPI } from '../profiles';
+import { profilesAPI } from '../settings/profiles';
 import { apiClient } from '../client';
 import type { ProfileInput } from '@/types/profile';
 

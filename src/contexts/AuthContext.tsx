@@ -1,6 +1,5 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI, LoginCredentials, User } from '@/lib/api/auth/auth';
 import { apiClient } from '@/lib/api/client';
@@ -13,6 +12,7 @@ import {
   stopMonitoring as stopSessionTimeout,
 } from '@/utils/auth/sessionTimeout';
 import { removeAuthToken } from '@/utils/auth/tokenManager';
+import React from 'react';
 
 interface AuthContextType {
   user: User | null;
@@ -22,21 +22,21 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
   // Check auth status only on mount
-  useEffect(() => {
+  React.useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  const handleSessionTimeout = useCallback(async () => {
+  const handleSessionTimeout = React.useCallback(async () => {
     console.log('[Auth] Session timeout - logging out user');
 
     // Stop monitoring
@@ -61,14 +61,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [router]);
 
-  const handleSessionWarning = useCallback(() => {
+  const handleSessionWarning = React.useCallback(() => {
     console.log('[Auth] Session will expire soon');
     // You can show a toast notification here if desired
     // For now, just log it
   }, []);
 
   // Initialize token refresh and session timeout when user changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (user) {
       // Initialize token refresh monitoring
       initializeTokenRefresh();
@@ -108,13 +108,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem('user-data', JSON.stringify(userData));
         setUser(userData);
       } catch {
-        // En cas d'erreur, essayer de charger depuis localStorage comme fallback
-        const storedUser = localStorage.getItem('user-data');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        } else {
-          setUser(null);
-        }
+        // Token/cookie invalide ou expiré: on nettoie l'état local
+        removeAuthToken();
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('user-data');
+        localStorage.removeItem('user-permissions');
+        localStorage.removeItem('user-permissions-timestamp');
+        setUser(null);
       }
     } finally {
       setIsLoading(false);
@@ -197,7 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

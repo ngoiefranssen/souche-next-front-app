@@ -2,7 +2,7 @@
  * Unit tests for Employment Status API service
  */
 
-import { employmentStatusAPI } from '../employment-status';
+import { employmentStatusAPI } from '../settings/employment-status';
 import { apiClient } from '../client';
 import type { EmploymentStatusInput } from '@/types/employment-status';
 

@@ -2,27 +2,93 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, MessageSquare, ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  BellRing,
+  Briefcase,
+  ChevronDown,
+  Gauge,
+  History,
+  Home,
+  KeyRound,
+  List,
+  MessageSquare,
+  Send,
+  Settings,
+  UserCog,
+  Users,
+  Wrench,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { useMemo } from 'react';
 
-interface SubMenuItem {
-  label: string;
-  href: string;
-  icon: React.ReactNode;
-  children?: { label: string; href: string }[];
+interface RewardsMenuItem {
+  key: string;
+  icon: LucideIcon;
+  href?: string;
+  chevron?: 'down';
 }
 
-const menuItems: SubMenuItem[] = [
+const menuItems: RewardsMenuItem[] = [
   {
-    label: 'Client List',
-    href: '/rewards/client-list',
-    icon: <Users className="w-4 h-4" />,
+    key: 'resellerOverview',
+    icon: Home,
+    href: '/rewards/reseller-overview',
   },
   {
-    label: 'GPRS & SMS Commands',
+    key: 'clientList',
+    icon: List,
+    href: '/rewards/client-list',
+  },
+  {
+    key: 'resellerUsers',
+    icon: Users,
+  },
+  {
+    key: 'resellerRolesPermissions',
+    icon: UserCog,
+  },
+  {
+    key: 'clientRolesPermissions',
+    icon: KeyRound,
+  },
+  {
+    key: 'loginEmailSmsHistory',
+    icon: History,
+    chevron: 'down',
+  },
+  {
+    key: 'clientPaymentReminders',
+    icon: BellRing,
+  },
+  {
+    key: 'dataForwarding',
+    icon: Send,
+  },
+  {
+    key: 'highAssetUsage',
+    icon: Gauge,
+    href: '/rewards/analytics',
+  },
+  {
+    key: 'tools',
+    icon: Wrench,
+  },
+  {
+    key: 'gprsSms',
+    icon: MessageSquare,
     href: '/rewards/gprs-sms',
-    icon: <MessageSquare className="w-4 h-4" />,
-    children: [{ label: 'GPRS Commands', href: '/rewards/gprs-sms/gprs' }],
+    chevron: 'down',
+  },
+  {
+    key: 'manageSubResellers',
+    icon: Briefcase,
+    href: '/rewards/control-room',
+  },
+  {
+    key: 'resellerSettings',
+    icon: Settings,
+    href: '/rewards/reports',
   },
 ];
 
@@ -31,86 +97,70 @@ interface RewardsLayoutProps {
 }
 
 export default function RewardsLayout({ children }: RewardsLayoutProps) {
+  const t = useTranslations('rewardsNav');
+  const locale = useLocale();
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>([
-    'Login, Email, Sms History',
-    'GPRS & SMS Commands',
-  ]);
 
-  const toggleExpand = (label: string) => {
-    setExpandedItems(prev =>
-      prev.includes(label)
-        ? prev.filter(item => item !== label)
-        : [...prev, label]
-    );
-  };
+  const pathWithoutLocale = useMemo(
+    () => pathname.replace(/^\/(en|fr|ar)(?=\/|$)/, ''),
+    [pathname]
+  );
+
+  const isRouteActive = (href?: string) =>
+    !!href &&
+    (pathWithoutLocale === href || pathWithoutLocale.startsWith(`${href}/`));
+
+  const withLocale = (href: string) => `/${locale}${href}`;
 
   return (
-    <div className="flex h-full gap-1">
-      {/* Sidebar de navigation */}
-      <aside className="w-72 bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-y-auto">
-        {/* Menu Items */}
-        <nav className="space-y-1">
-          {menuItems.map(item => (
-            <div key={item.label}>
-              {item.children ? (
-                <>
-                  <button
-                    onClick={() => toggleExpand(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
-                      pathname?.includes(item.href)
-                        ? 'bg-gray-100 text-gray-900 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </div>
-                    {expandedItems.includes(item.label) ? (
-                      <ChevronDown className="w-4 h-4" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                  </button>
-                  {expandedItems.includes(item.label) && (
-                    <div className="ml-6 mt-1 space-y-1">
-                      {item.children.map(child => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                            pathname === child.href
-                              ? 'bg-gray-100 text-gray-900 font-medium'
-                              : 'text-gray-600 hover:bg-gray-50'
-                          }`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
+    <div className="flex flex-col gap-3 lg:flex-row">
+      <aside className="w-full lg:w-[310px] rounded-xl border border-[#E4E9F0] bg-white p-3 shadow-sm">
+        <nav className="space-y-[2px]">
+          {menuItems.map(item => {
+            const active = isRouteActive(item.href);
+            const itemClasses = `group flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-[15px] font-medium transition-colors ${
+              active
+                ? 'bg-[#D4D9E1] text-[#1F3651]'
+                : 'text-[#334D6B] hover:bg-[#F2F5F9]'
+            }`;
+            const iconClasses = `h-4 w-4 shrink-0 ${
+              active
+                ? 'text-[#6D86A3]'
+                : 'text-[#9AAEC3] group-hover:text-[#7A94AF]'
+            }`;
+
+            if (!item.href) {
+              return (
+                <button key={item.key} type="button" className={itemClasses}>
+                  <item.icon className={iconClasses} />
+                  <span className="truncate">
+                    {t(`items.${item.key}.label`)}
+                  </span>
+                  {item.chevron === 'down' && (
+                    <ChevronDown className="ml-auto h-4 w-4 text-[#4C6786]" />
                   )}
-                </>
-              ) : (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    pathname === item.href
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              )}
-            </div>
-          ))}
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={item.key}
+                href={withLocale(item.href)}
+                className={itemClasses}
+              >
+                <item.icon className={iconClasses} />
+                <span className="truncate">{t(`items.${item.key}.label`)}</span>
+                {item.chevron === 'down' && (
+                  <ChevronDown className="ml-auto h-4 w-4 text-[#4C6786]" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 
-      {/* Contenu principal (outlet) */}
-      <main className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-y-auto">
+      <main className="min-w-0 flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
         {children}
       </main>
     </div>

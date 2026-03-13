@@ -20,9 +20,19 @@ export interface ToastOptions {
 }
 
 /**
+ * Payload de notification toast générique
+ */
+export interface ShowToastPayload {
+  message: string;
+  variant: ToastVariant;
+  options?: ToastOptions;
+}
+
+/**
  * Interface de retour du hook useToast
  */
 export interface UseToastReturn {
+  showToast: (payload: ShowToastPayload) => void;
   success: (message: string, options?: ToastOptions) => void;
   error: (message: string, options?: ToastOptions) => void;
   info: (message: string, options?: ToastOptions) => void;
@@ -51,7 +61,7 @@ export interface UseToastReturn {
  * ```
  */
 export function useToast(): UseToastReturn {
-  const showToast = useCallback(
+  const displayToast = useCallback(
     (message: string, variant: ToastVariant, options: ToastOptions = {}) => {
       const { duration = 3000, position = 'top-right' } = options;
 
@@ -104,32 +114,39 @@ export function useToast(): UseToastReturn {
     []
   );
 
+  const showToast = useCallback(
+    ({ message, variant, options }: ShowToastPayload) => {
+      displayToast(message, variant, options);
+    },
+    [displayToast]
+  );
+
   const success = useCallback(
     (message: string, options?: ToastOptions) => {
-      showToast(message, 'success', options);
+      displayToast(message, 'success', options);
     },
-    [showToast]
+    [displayToast]
   );
 
   const error = useCallback(
     (message: string, options?: ToastOptions) => {
-      showToast(message, 'error', options);
+      displayToast(message, 'error', options);
     },
-    [showToast]
+    [displayToast]
   );
 
   const info = useCallback(
     (message: string, options?: ToastOptions) => {
-      showToast(message, 'info', options);
+      displayToast(message, 'info', options);
     },
-    [showToast]
+    [displayToast]
   );
 
   const warning = useCallback(
     (message: string, options?: ToastOptions) => {
-      showToast(message, 'warning', options);
+      displayToast(message, 'warning', options);
     },
-    [showToast]
+    [displayToast]
   );
 
   const dismiss = useCallback((id?: string) => {
@@ -144,7 +161,7 @@ export function useToast(): UseToastReturn {
     }
   }, []);
 
-  return { success, error, info, warning, dismiss };
+  return { showToast, success, error, info, warning, dismiss };
 }
 
 /**

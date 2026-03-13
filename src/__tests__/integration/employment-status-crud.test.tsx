@@ -8,9 +8,9 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import EmploymentStatusPage from '@/app/[locale]/dashboard/employment-status/page';
+import EmploymentStatusPage from '@/app/[locale]/settings/employment-status/page';
 import { PermissionProvider } from '@/contexts/PermissionContext';
-import { employmentStatusAPI } from '@/lib/api/employment-status';
+import { employmentStatusAPI } from '@/lib/api/settings/employment-status';
 import type { EmploymentStatus } from '@/types/employment-status';
 
 // Mock the API
@@ -40,7 +40,7 @@ jest.mock('next/navigation', () => ({
     replace: jest.fn(),
     prefetch: jest.fn(),
   }),
-  usePathname: () => '/dashboard/employment-status',
+  usePathname: () => '/settings/employment-status',
 }));
 
 // Test data

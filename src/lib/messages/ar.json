@@ -36,11 +36,112 @@
     "loggingIn": "جاري تسجيل الدخول...",
     "login": "تسجيل الدخول"
   },
+  "sidebar": {
+    "settings": "الإعدادات",
+    "rewards": "المكافآت",
+    "menu": "القائمة",
+    "items": {
+      "dashboard": "لوحة التحكم",
+      "map": "الخريطة",
+      "assetInfo": "معلومات الأصل",
+      "trips": "الرحلات",
+      "zones": "المناطق",
+      "alerts": "التنبيهات",
+      "reports": "التقارير",
+      "modules": "الوحدات",
+      "video": "الفيديو",
+      "controlRoom": "غرفة التحكم"
+    }
+  },
   "common": {
     "logout": "تسجيل الخروج",
     "loggingOut": "جاري تسجيل الخروج...",
     "settings": "الإعدادات",
     "profile": "الملف الشخصي",
     "help": "المساعدة"
+  },
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "dashboard": "لوحة التحكم",
+    "settings": "الإعدادات",
+    "users": "المستخدمون",
+    "roles": "الأدوار",
+    "profiles": "الملفات",
+    "employmentStatus": "حالة التوظيف",
+    "permissions": "الصلاحيات",
+    "audit": "التدقيق",
+    "rewards": "المكافآت",
+    "clientList": "قائمة العملاء",
+    "resellerOverview": "نظرة عامة على الموزع",
+    "gprsSms": "أوامر GPRS وSMS",
+    "gprs": "GPRS",
+    "sms": "SMS",
+    "create": "إنشاء",
+    "edit": "تعديل",
+    "assign": "تعيين"
+  },
+  "rewardsNav": {
+    "header": {
+      "badge": "Asyst Resources",
+      "title": "تنقل المكافآت"
+    },
+    "items": {
+      "resellerOverview": {
+        "label": "نظرة عامة على الموزع",
+        "description": "راقب نشاط الموزع والمؤشرات الأساسية"
+      },
+      "clientList": {
+        "label": "قائمة العملاء",
+        "description": "تصفح وأدر عملاء الموزعين"
+      },
+      "resellerUsers": {
+        "label": "مستخدمو الموزع",
+        "description": "إدارة مستخدمي الموزع"
+      },
+      "resellerRolesPermissions": {
+        "label": "أدوار وصلاحيات الموزع",
+        "description": "مصفوفة أدوار وصلاحيات الموزع"
+      },
+      "clientRolesPermissions": {
+        "label": "أدوار وصلاحيات العميل",
+        "description": "مصفوفة أدوار وصلاحيات العميل"
+      },
+      "loginEmailSmsHistory": {
+        "label": "سجل الدخول والبريد والرسائل",
+        "description": "سجل تسجيل الدخول والبريد الإلكتروني والرسائل النصية"
+      },
+      "clientPaymentReminders": {
+        "label": "تذكيرات دفع العميل",
+        "description": "إدارة تذكيرات سداد العملاء"
+      },
+      "dataForwarding": {
+        "label": "إعادة توجيه البيانات",
+        "description": "توجيه وإعادة تمرير البيانات"
+      },
+      "highAssetUsage": {
+        "label": "الاستخدام العالي للأصول",
+        "description": "مراقبة الأصول عالية الاستخدام"
+      },
+      "tools": {
+        "label": "الأدوات",
+        "description": "أدوات تشغيلية"
+      },
+      "gprsSms": {
+        "label": "أوامر GPRS وSMS",
+        "description": "إدارة سير عمل أوامر الاتصالات",
+        "children": {
+          "gprs": "أوامر GPRS",
+          "sms": "أوامر SMS"
+        }
+      },
+      "manageSubResellers": {
+        "label": "إدارة الموزعين الفرعيين",
+        "description": "إدارة هيكل الموزعين الفرعيين"
+      },
+      "resellerSettings": {
+        "label": "إعدادات الموزع",
+        "description": "ضبط إعدادات الموزع"
+      }
+    }
   }
 }

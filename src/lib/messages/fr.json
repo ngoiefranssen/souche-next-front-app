@@ -36,26 +36,123 @@
     "loggingIn": "Connexion en cours…",
     "login": "Se connecter"
   },
+  "sidebar": {
+    "settings": "Paramètres",
+    "rewards": "Récompenses",
+    "menu": "Menu",
+    "items": {
+      "dashboard": "Dashboard",
+      "map": "Map",
+      "assetInfo": "Asset Info",
+      "trips": "Trips",
+      "zones": "Zones",
+      "alerts": "Alerts",
+      "reports": "Reports",
+      "modules": "Modules",
+      "video": "Video",
+      "controlRoom": "Control Room"
+    }
+  },
   "common": {
     "logout": "Se déconnecter",
     "loggingOut": "Déconnexion...",
-    "settings": "Paramètres",
     "profile": "Profil",
     "help": "Aide"
   },
   "breadcrumb": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
+    "settings": "Paramètres",
     "users": "Utilisateurs",
     "roles": "Rôles",
     "profiles": "Profils",
     "employmentStatus": "Statuts d'emploi",
     "permissions": "Permissions",
     "audit": "Audit",
-    "rewards": "Récompenses",
+    "clientList": "Liste des clients",
+    "resellerOverview": "Vue revendeur",
+    "gprsSms": "Commandes GPRS & SMS",
+    "gprs": "GPRS",
+    "sms": "SMS",
     "create": "Créer",
     "edit": "Modifier",
     "assign": "Assigner"
+  },
+  "rewardsNav": {
+    "header": {
+      "badge": "Ressources Asyst",
+      "title": "Navigation des récompenses"
+    },
+    "items": {
+      "resellerOverview": {
+        "label": "Vue revendeur",
+        "description": "Suivez l'activité et les indicateurs clés"
+      },
+      "clientList": {
+        "label": "Liste des clients",
+        "description": "Parcourez et gérez les clients revendeurs"
+      },
+      "resellerUsers": {
+        "label": "Utilisateurs revendeur",
+        "description": "Gestion des utilisateurs revendeurs"
+      },
+      "resellerRolesPermissions": {
+        "label": "Rôles & permissions revendeur",
+        "description": "Rôles et permissions côté revendeur"
+      },
+      "clientRolesPermissions": {
+        "label": "Rôles & permissions client",
+        "description": "Rôles et permissions côté client"
+      },
+      "loginEmailSmsHistory": {
+        "label": "Historique login, email, SMS",
+        "description": "Historique de connexion, email et SMS"
+      },
+      "clientPaymentReminders": {
+        "label": "Rappels de paiement client",
+        "description": "Rappels de paiement client"
+      },
+      "dataForwarding": {
+        "label": "Transfert de données",
+        "description": "Routage et redirection des données"
+      },
+      "highAssetUsage": {
+        "label": "Forte utilisation des assets",
+        "description": "Surveillance de la forte utilisation des assets"
+      },
+      "tools": {
+        "label": "Outils",
+        "description": "Outils opérationnels"
+      },
+      "controlRoom": {
+        "label": "Salle de contrôle",
+        "description": "Centre de contrôle et de monitoring système"
+      },
+      "analytics": {
+        "label": "Analytiques",
+        "description": "Analyse de données et insights"
+      },
+      "reports": {
+        "label": "Rapports",
+        "description": "Générer et consulter les rapports"
+      },
+      "gprsSms": {
+        "label": "Commandes GPRS & SMS",
+        "description": "Gérez les workflows de commandes télécom",
+        "children": {
+          "gprs": "Commandes GPRS",
+          "sms": "Commandes SMS"
+        }
+      },
+      "manageSubResellers": {
+        "label": "Gérer les sous-revendeurs",
+        "description": "Gestion des sous-revendeurs"
+      },
+      "resellerSettings": {
+        "label": "Paramètres revendeur",
+        "description": "Paramètres revendeur"
+      }
+    }
   },
   "errors": {
     "network": {

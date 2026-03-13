@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { apiClient } from '@/lib/api/client';
 import { logError } from '@/lib/utils/errorLogger';
+import { getAuthToken } from '@/utils/auth/tokenManager';
 
 interface PermissionContextType {
   permissions: string[];
@@ -34,6 +35,40 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const hasPermissionMatch = useCallback(
+    (requiredPermission: string): boolean => {
+      if (!requiredPermission) return false;
+
+      // Exact permission
+      if (permissions.includes(requiredPermission)) {
+        return true;
+      }
+
+      // Super admin/global wildcards
+      if (
+        permissions.includes('system:*') ||
+        permissions.includes('*') ||
+        permissions.includes('*:*')
+      ) {
+        return true;
+      }
+
+      // Resource wildcard (e.g. "users:*" matches "users:read")
+      const [resource] = requiredPermission.split(':');
+      if (!resource) {
+        return false;
+      }
+
+      return permissions.includes(`${resource}:*`);
+    },
+    [permissions]
+  );
+
+  const hasAuthToken = useCallback((): boolean => {
+    if (typeof window === 'undefined') return false;
+    return Boolean(getAuthToken());
+  }, []);
 
   /**
    * Check if cached permissions are still valid
@@ -93,6 +128,10 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    * Fetch permissions from backend
    */
   const fetchPermissions = useCallback(async (): Promise<string[]> => {
+    if (!hasAuthToken()) {
+      return [];
+    }
+
     try {
       // Call GET /api/v1/users/me/permissions
       const response = await apiClient.get<{ data: string[] }>(
@@ -112,7 +151,7 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       const cached = loadFromCache();
       return cached || [];
     }
-  }, [clearCache, loadFromCache]);
+  }, [clearCache, hasAuthToken, loadFromCache]);
 
   /**
    * Refresh permissions from backend
@@ -121,13 +160,19 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
   const refreshPermissions = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
+      if (!hasAuthToken()) {
+        setPermissions([]);
+        clearCache();
+        return;
+      }
+
       const perms = await fetchPermissions();
       setPermissions(perms);
       saveToCache(perms);
     } finally {
       setLoading(false);
     }
-  }, [fetchPermissions, saveToCache]);
+  }, [clearCache, fetchPermissions, hasAuthToken, saveToCache]);
 
   /**
    * Clear permissions from state and cache
@@ -147,6 +192,14 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
 
       try {
+        // Skip protected permission calls when user is not authenticated
+        if (!hasAuthToken()) {
+          setPermissions([]);
+          clearCache();
+          setLoading(false);
+          return;
+        }
+
         // Check if we have valid cached permissions
         if (isCacheValid()) {
           const cached = loadFromCache();
@@ -167,7 +220,14 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     loadPermissions();
-  }, [fetchPermissions, isCacheValid, loadFromCache, saveToCache]);
+  }, [
+    clearCache,
+    fetchPermissions,
+    hasAuthToken,
+    isCacheValid,
+    loadFromCache,
+    saveToCache,
+  ]);
 
   /**
    * Listen for auth events to refresh or clear permissions
@@ -199,9 +259,9 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const hasPermission = useCallback(
     (permission: string): boolean => {
-      return permissions.includes(permission);
+      return hasPermissionMatch(permission);
     },
-    [permissions]
+    [hasPermissionMatch]
   );
 
   /**
@@ -209,9 +269,9 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const hasAnyPermission = useCallback(
     (perms: string[]): boolean => {
-      return perms.some(permission => permissions.includes(permission));
+      return perms.some(permission => hasPermissionMatch(permission));
     },
-    [permissions]
+    [hasPermissionMatch]
   );
 
   /**
@@ -219,9 +279,9 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const hasAllPermissions = useCallback(
     (perms: string[]): boolean => {
-      return perms.every(permission => permissions.includes(permission));
+      return perms.every(permission => hasPermissionMatch(permission));
     },
-    [permissions]
+    [hasPermissionMatch]
   );
 
   const value: PermissionContextType = {

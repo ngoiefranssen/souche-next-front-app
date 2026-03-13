@@ -211,7 +211,7 @@ All components in `src/components/ui/Form/`:
      - `src/components/ui/Button/Button.tsx`
      - `src/components/ui/DataTable/DataTableActions.tsx`
      - `src/hooks/useToast.ts`
-     - `src/app/[locale]/dashboard/page.tsx`
+     - `src/app/[locale]/settings/page.tsx`
 
 2. **Verification Script Created**
    - `scripts/verify-contrast.js` - Automated contrast verification
@@ -331,7 +331,7 @@ Recommended testing with:
 - `src/components/ui/Button/Button.tsx` - Updated success color
 - `src/components/ui/DataTable/DataTableActions.tsx` - Updated success color
 - `src/hooks/useToast.ts` - Updated success icon color
-- `src/app/[locale]/dashboard/page.tsx` - Updated success text color
+- `src/app/[locale]/settings/page.tsx` - Updated success text color
 
 ### Configuration
 

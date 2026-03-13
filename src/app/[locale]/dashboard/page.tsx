@@ -16,7 +16,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">

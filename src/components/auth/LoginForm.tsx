@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 
 import { LoginCredentials, authAPI } from '@/lib/api/auth/auth';
+import { ApiError } from '@/lib/api/client';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { setAuthToken } from '@/utils/auth/tokenManager';
 
@@ -82,7 +83,12 @@ export default function LoginForm() {
 
       // Forcer un rechargement complet pour que le middleware puisse lire le token
       window.location.href = `/${locale}/dashboard`;
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.message?.trim()) {
+        setErrors({ password: error.message.trim() });
+        return;
+      }
+
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
       if (newAttempts >= Number(process.env.NEXT_PUBLIC_MAX_ATTEMPTS ?? '5')) {

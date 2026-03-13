@@ -8,11 +8,11 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import UsersPage from '@/app/[locale]/dashboard/users/page';
+import UsersPage from '@/app/[locale]/settings/users/page';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { usersAPI } from '@/lib/api/users';
-import { profilesAPI } from '@/lib/api/profiles';
-import { employmentStatusAPI } from '@/lib/api/employment-status';
+import { profilesAPI } from '@/lib/api/settings/profiles';
+import { employmentStatusAPI } from '@/lib/api/settings/employment-status';
 import type { User, UserListItem } from '@/types/user';
 
 // Mock the APIs
@@ -44,7 +44,7 @@ jest.mock('next/navigation', () => ({
     replace: jest.fn(),
     prefetch: jest.fn(),
   }),
-  usePathname: () => '/dashboard/users',
+  usePathname: () => '/settings/users',
 }));
 
 // Test data
@@ -186,11 +186,11 @@ describe('Users CRUD Integration Tests', () => {
       });
       await user.click(createButton);
 
-      // Note: In a real app, this would navigate to /dashboard/users/create
+      // Note: In a real app, this would navigate to /settings/users/create
       // For this test, we'll simulate the form submission directly
 
       // STEP 3: Edit user (navigate to edit page)
-      // In a real app, clicking edit would navigate to /dashboard/users/[id]/edit
+      // In a real app, clicking edit would navigate to /settings/users/[id]/edit
 
       // STEP 4: Delete user
       const johnRow = screen.getByText('John Doe').closest('tr');
@@ -502,7 +502,7 @@ describe('Users CRUD Integration Tests', () => {
       });
       expect(createButton).toBeInTheDocument();
 
-      // In a real app, clicking this would navigate to /dashboard/users/create
+      // In a real app, clicking this would navigate to /settings/users/create
       await user.click(createButton);
     });
 
@@ -520,7 +520,7 @@ describe('Users CRUD Integration Tests', () => {
 
       if (editButton) {
         expect(editButton).toBeInTheDocument();
-        // In a real app, clicking this would navigate to /dashboard/users/[id]/edit
+        // In a real app, clicking this would navigate to /settings/users/[id]/edit
       }
     });
   });

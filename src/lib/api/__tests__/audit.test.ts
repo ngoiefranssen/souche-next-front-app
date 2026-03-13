@@ -2,7 +2,7 @@
  * Unit tests for Audit API service
  */
 
-import { auditAPI } from '../audit';
+import { auditAPI } from '../aud/audit';
 import { apiClient } from '../client';
 
 // Mock the API client

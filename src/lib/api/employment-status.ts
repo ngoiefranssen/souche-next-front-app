@@ -21,6 +21,33 @@ export interface EmploymentStatusQueryParams {
   sortOrder?: 'asc' | 'desc';
 }
 
+interface BackendEmploymentStatus {
+  id: number;
+  label: string;
+  description: string | null;
+  _count?: {
+    users: number;
+  };
+}
+
+interface BackendEmploymentStatusListResponse {
+  status: 'success';
+  data: BackendEmploymentStatus[];
+  pagination: PaginatedResponse<EmploymentStatus>['pagination'];
+}
+
+const toEmploymentStatus = (
+  status: BackendEmploymentStatus
+): EmploymentStatus => ({
+  id: status.id,
+  label: status.label,
+  description: status.description,
+  createdAt: '',
+  updatedAt: '',
+  deletedAt: null,
+  _count: status._count,
+});
+
 /**
  * Get all employment statuses with pagination and filters
  */
@@ -32,15 +59,23 @@ export async function getAll(
   if (params.page) queryParams.append('page', params.page.toString());
   if (params.limit) queryParams.append('limit', params.limit.toString());
   if (params.search) queryParams.append('search', params.search);
-  if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+  if (params.sortBy) queryParams.append('orderBy', params.sortBy);
+  if (params.sortOrder)
+    queryParams.append('order', params.sortOrder.toUpperCase());
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `/employment-statut?${queryString}`
-    : '/employment-statut';
+    ? `/employment-statut/list/default?${queryString}`
+    : '/employment-statut/list/default';
 
-  return apiClient.get<PaginatedResponse<EmploymentStatus>>(endpoint);
+  const response =
+    await apiClient.get<BackendEmploymentStatusListResponse>(endpoint);
+
+  return {
+    status: 'success',
+    data: response.data.map(toEmploymentStatus),
+    pagination: response.pagination,
+  };
 }
 
 /**
@@ -49,9 +84,15 @@ export async function getAll(
 export async function getById(
   id: number
 ): Promise<ApiResponse<EmploymentStatus>> {
-  return apiClient.get<ApiResponse<EmploymentStatus>>(
-    `/employment-statut/${id}`
-  );
+  const response = await apiClient.get<{
+    status: 'success';
+    data: BackendEmploymentStatus;
+  }>(`/employment-statut/one/${id}`);
+
+  return {
+    status: 'success',
+    data: toEmploymentStatus(response.data),
+  };
 }
 
 /**
@@ -60,10 +101,15 @@ export async function getById(
 export async function create(
   data: EmploymentStatusInput
 ): Promise<ApiResponse<EmploymentStatus>> {
-  return apiClient.post<ApiResponse<EmploymentStatus>>(
-    '/employment-statut',
-    data
-  );
+  const response = await apiClient.post<{
+    status: 'success';
+    data: BackendEmploymentStatus;
+  }>('/employment-statut/create', data);
+
+  return {
+    status: 'success',
+    data: toEmploymentStatus(response.data),
+  };
 }
 
 /**
@@ -73,10 +119,15 @@ export async function update(
   id: number,
   data: Partial<EmploymentStatusInput>
 ): Promise<ApiResponse<EmploymentStatus>> {
-  return apiClient.put<ApiResponse<EmploymentStatus>>(
-    `/employment-statut/${id}`,
-    data
-  );
+  const response = await apiClient.patch<{
+    status: 'success';
+    data: BackendEmploymentStatus;
+  }>(`/employment-statut/mod/${id}`, data);
+
+  return {
+    status: 'success',
+    data: toEmploymentStatus(response.data),
+  };
 }
 
 /**
@@ -85,7 +136,7 @@ export async function update(
 export async function deleteEmploymentStatus(
   id: number
 ): Promise<ApiResponse<void>> {
-  return apiClient.delete<ApiResponse<void>>(`/employment-statut/${id}`);
+  return apiClient.delete<ApiResponse<void>>(`/employment-statut/move/${id}`);
 }
 
 export const employmentStatusAPI = {

@@ -67,7 +67,7 @@ export const ProfileTable: React.FC<ProfileTableProps> = ({
     {
       key: '_count',
       label: "Nombre d'utilisateurs",
-      sortable: true,
+      sortable: false,
       filterable: false,
       align: 'center',
       render: (value, row) => {

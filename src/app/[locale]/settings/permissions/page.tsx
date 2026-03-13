@@ -1,207 +1,187 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { EmploymentStatusTable } from '@/components/features/employment-status/EmploymentStatusTable';
-import { EmploymentStatusForm } from '@/components/features/employment-status/EmploymentStatusForm';
+import {
+  PermissionTable,
+  PermissionForm,
+} from '@/components/features/permissions';
 import { FormModal } from '@/components/ui/Modal/FormModal';
 import { ConfirmModal } from '@/components/ui/Modal/ConfirmModal';
 import { Button } from '@/components/ui/Button/Button';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Can } from '@/components/auth/Can';
 import { useToast } from '@/hooks/useToast';
-import { employmentStatusAPI } from '@/lib/api/employment-status';
-import type {
-  EmploymentStatus,
-  EmploymentStatusInput,
-} from '@/types/employment-status';
+import { permissionsAPI } from '@/lib/api/permissions';
+import type { Permission, PermissionInput } from '@/types/permission';
 import { Plus } from 'lucide-react';
 
-/**
- * Page de gestion des statuts d'emploi
- *
- * Permissions requises:
- * - employment-status:read pour voir la page
- * - employment-status:create pour créer
- * - employment-status:update pour modifier
- * - employment-status:delete pour supprimer
- */
-export default function EmploymentStatusPage() {
+export default function PermissionsPage() {
   const { showToast } = useToast();
 
-  const [employmentStatuses, setEmploymentStatuses] = useState<
-    EmploymentStatus[]
-  >([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
-  const [sortBy, setSortBy] = useState<string>('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
   const [search, setSearch] = useState('');
+  const [resource, setResource] = useState('');
+  const [action, setAction] = useState('');
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<EmploymentStatus | null>(
-    null
-  );
+  const [selectedPermission, setSelectedPermission] =
+    useState<Permission | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string>('');
+  const [formError, setFormError] = useState('');
 
-  const loadEmploymentStatuses = useCallback(async () => {
+  const loadPermissions = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await employmentStatusAPI.getAll({
+      const response = await permissionsAPI.getAll({
         page,
         limit,
         search: search || undefined,
-        sortBy: sortBy || undefined,
-        sortOrder: sortOrder || undefined,
+        resource: resource || undefined,
+        action: action || undefined,
       });
 
-      setEmploymentStatuses(response.data);
+      setPermissions(response.data);
       setTotal(response.pagination.total);
     } catch (error) {
       showToast({
-        message: "Erreur lors du chargement des statuts d'emploi",
+        message: 'Erreur lors du chargement des permissions',
         variant: 'error',
       });
-      console.error('Error loading employment statuses:', error);
+      console.error('Error loading permissions:', error);
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, sortBy, sortOrder, showToast]);
+  }, [page, limit, search, resource, action, showToast]);
 
   useEffect(() => {
-    loadEmploymentStatuses();
-  }, [loadEmploymentStatuses]);
+    loadPermissions();
+  }, [loadPermissions]);
 
-  const handleCreate = async (data: EmploymentStatusInput) => {
+  const handleCreate = async (data: PermissionInput) => {
     try {
       setIsSubmitting(true);
       setFormError('');
 
-      await employmentStatusAPI.create(data);
+      await permissionsAPI.create(data);
 
       showToast({
-        message: "Statut d'emploi créé avec succès",
+        message: 'Permission créée avec succès',
         variant: 'success',
       });
 
       setIsCreateModalOpen(false);
-      loadEmploymentStatuses();
+      await loadPermissions();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Erreur lors de la création du statut';
+          : 'Erreur lors de la création de la permission';
       setFormError(errorMessage);
-      showToast({
-        message: errorMessage,
-        variant: 'error',
-      });
+      showToast({ message: errorMessage, variant: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleEdit = async (data: EmploymentStatusInput) => {
-    if (!selectedStatus) return;
+  const handleEdit = async (data: PermissionInput) => {
+    if (!selectedPermission) return;
 
     try {
       setIsSubmitting(true);
       setFormError('');
 
-      await employmentStatusAPI.update(selectedStatus.id, data);
+      await permissionsAPI.update(selectedPermission.id, data);
 
       showToast({
-        message: "Statut d'emploi modifié avec succès",
+        message: 'Permission modifiée avec succès',
         variant: 'success',
       });
 
       setIsEditModalOpen(false);
-      setSelectedStatus(null);
-      loadEmploymentStatuses();
+      setSelectedPermission(null);
+      await loadPermissions();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Erreur lors de la modification du statut';
+          : 'Erreur lors de la modification de la permission';
       setFormError(errorMessage);
-      showToast({
-        message: errorMessage,
-        variant: 'error',
-      });
+      showToast({ message: errorMessage, variant: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!selectedStatus) return;
+    if (!selectedPermission) return;
 
     try {
       setIsSubmitting(true);
 
-      await employmentStatusAPI.delete(selectedStatus.id);
+      await permissionsAPI.delete(selectedPermission.id);
 
       showToast({
-        message: "Statut d'emploi supprimé avec succès",
+        message: 'Permission supprimée avec succès',
         variant: 'success',
       });
 
       setIsDeleteModalOpen(false);
-      setSelectedStatus(null);
-      loadEmploymentStatuses();
+      setSelectedPermission(null);
+      await loadPermissions();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Erreur lors de la suppression du statut';
-      showToast({
-        message: errorMessage,
-        variant: 'error',
-      });
+          : 'Erreur lors de la suppression de la permission';
+      showToast({ message: errorMessage, variant: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const openEditModal = (status: EmploymentStatus) => {
-    setSelectedStatus(status);
+  const openEditModal = (permission: Permission) => {
+    setSelectedPermission(permission);
     setFormError('');
     setIsEditModalOpen(true);
   };
 
-  const openDeleteModal = (status: EmploymentStatus) => {
-    setSelectedStatus(status);
+  const openDeleteModal = (permission: Permission) => {
+    setSelectedPermission(permission);
     setIsDeleteModalOpen(true);
   };
 
-  const handleSort = (key: string, direction: 'asc' | 'desc') => {
-    setSortBy(key);
-    setSortOrder(direction);
+  const handleSort = () => {
+    // Sorting is currently managed server-side by backend defaults.
   };
 
   const handleFilter = (filters: Record<string, unknown>) => {
-    setSearch((filters.label as string) || '');
+    setSearch((filters.name as string) || '');
+    setResource((filters.resource as string) || '');
+    setAction((filters.action as string) || '');
     setPage(1);
   };
 
   return (
-    <ProtectedRoute permission="employment-status:read">
+    <ProtectedRoute permission="permissions:read">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Gestion des Statuts d&apos;Emploi
+              Gestion des Permissions
             </h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
-              Gérez les statuts d&apos;emploi (CDI, CDD, Stage, etc.)
+              Gérez les permissions applicatives et leur cycle de vie
             </p>
           </div>
 
-          <Can permission="employment-status:create">
+          <Can permission="permissions:create">
             <Button
               variant="primary"
               icon={<Plus className="w-5 h-5" />}
@@ -213,13 +193,13 @@ export default function EmploymentStatusPage() {
               fullWidth
               className="sm:w-auto"
             >
-              Créer un statut
+              Créer une permission
             </Button>
           </Can>
         </div>
 
-        <EmploymentStatusTable
-          employmentStatuses={employmentStatuses}
+        <PermissionTable
+          permissions={permissions}
           loading={loading}
           pagination={{
             page,
@@ -237,9 +217,9 @@ export default function EmploymentStatusPage() {
         <FormModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          title="Créer un statut d'emploi"
+          title="Créer une permission"
         >
-          <EmploymentStatusForm
+          <PermissionForm
             onSubmit={handleCreate}
             onCancel={() => setIsCreateModalOpen(false)}
             isSubmitting={isSubmitting}
@@ -251,20 +231,22 @@ export default function EmploymentStatusPage() {
           isOpen={isEditModalOpen}
           onClose={() => {
             setIsEditModalOpen(false);
-            setSelectedStatus(null);
+            setSelectedPermission(null);
           }}
-          title="Modifier le statut d'emploi"
+          title="Modifier la permission"
         >
-          {selectedStatus && (
-            <EmploymentStatusForm
+          {selectedPermission && (
+            <PermissionForm
               initialData={{
-                label: selectedStatus.label,
-                description: selectedStatus.description || '',
+                name: selectedPermission.name,
+                resource: selectedPermission.resource,
+                action: selectedPermission.action,
+                description: selectedPermission.description || '',
               }}
               onSubmit={handleEdit}
               onCancel={() => {
                 setIsEditModalOpen(false);
-                setSelectedStatus(null);
+                setSelectedPermission(null);
               }}
               isSubmitting={isSubmitting}
               error={formError}
@@ -276,11 +258,11 @@ export default function EmploymentStatusPage() {
           isOpen={isDeleteModalOpen}
           onClose={() => {
             setIsDeleteModalOpen(false);
-            setSelectedStatus(null);
+            setSelectedPermission(null);
           }}
           onConfirm={handleDelete}
-          title="Supprimer le statut d'emploi"
-          message={`Êtes-vous sûr de vouloir supprimer le statut "${selectedStatus?.label}" ? Cette action est irréversible et ne peut être effectuée que si aucun utilisateur n'utilise ce statut.`}
+          title="Supprimer la permission"
+          message={`Êtes-vous sûr de vouloir supprimer la permission "${selectedPermission?.name}" ? Cette action est irréversible.`}
           confirmText="Supprimer"
           cancelText="Annuler"
           variant="danger"

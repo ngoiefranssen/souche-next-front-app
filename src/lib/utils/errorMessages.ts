@@ -18,6 +18,7 @@ export type ErrorCode =
   | 'resource.not_found'
   | 'resource.conflict'
   | 'resource.in_use'
+  | 'server.too_many_requests'
   | 'server.error'
   | 'server.unavailable'
   | 'unknown.error';
@@ -98,6 +99,10 @@ export const ERROR_MESSAGES: Record<ErrorCode, ErrorMessage> = {
   },
 
   // Erreurs serveur
+  'server.too_many_requests': {
+    fr: 'Trop de requêtes. Veuillez réessayer plus tard.',
+    en: 'Too many requests. Please try again later.',
+  },
   'server.error': {
     fr: 'Erreur serveur. Veuillez réessayer plus tard.',
     en: 'Server error. Please try again later.',
@@ -144,6 +149,8 @@ export function mapHttpStatusToErrorCode(status: number): ErrorCode {
       return 'resource.conflict';
     case 500:
       return 'server.error';
+    case 429:
+      return 'server.too_many_requests';
     case 502:
     case 503:
       return 'server.unavailable';
@@ -178,22 +185,30 @@ export async function extractApiErrorMessage(
   locale: 'fr' | 'en' = 'fr'
 ): Promise<string> {
   try {
-    const data = await response.json();
+    const rawText = await response.text();
+    if (rawText?.trim()) {
+      // Le backend peut renvoyer soit du JSON, soit du texte brut (ex: rate limiter).
+      try {
+        const data = JSON.parse(rawText);
 
-    // Vérifier si le backend a fourni un message
-    if (data.message) {
-      return data.message;
-    }
+        // Vérifier si le backend a fourni un message
+        if (data.message) {
+          return data.message;
+        }
 
-    // Vérifier si c'est une erreur de validation avec des détails
-    if (data.errors && typeof data.errors === 'object') {
-      const firstError = Object.values(data.errors)[0];
-      if (Array.isArray(firstError) && firstError.length > 0) {
-        return firstError[0] as string;
+        // Vérifier si c'est une erreur de validation avec des détails
+        if (data.errors && typeof data.errors === 'object') {
+          const firstError = Object.values(data.errors)[0];
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            return firstError[0] as string;
+          }
+        }
+      } catch {
+        return rawText.trim();
       }
     }
   } catch {
-    // Si le parsing JSON échoue, utiliser le message par défaut
+    // Si la lecture échoue, utiliser le message par défaut
   }
 
   // Utiliser le message par défaut selon le code de statut

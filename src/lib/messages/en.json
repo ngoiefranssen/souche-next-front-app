@@ -31,31 +31,127 @@
     "password": "Password",
     "togglePassword": "Toggle password visibility",
     "captchaRequired": "Please complete the CAPTCHA",
-    "invalidCredentials": "Invalid credentials",
+    "invalidCredentials": "Invalid email or password.",
     "tooManyAttempts": "Too many attempts, try again in 30s",
     "loggingIn": "Signing in...",
     "login": "Sign In"
   },
+  "sidebar": {
+    "settings": "Settings",
+    "rewards": "Rewards",
+    "menu": "Menu",
+    "items": {
+      "dashboard": "Dashboard",
+      "map": "Map",
+      "assetInfo": "Asset Info",
+      "trips": "Trips",
+      "zones": "Zones",
+      "alerts": "Alerts",
+      "reports": "Reports",
+      "modules": "Modules",
+      "video": "Video",
+      "controlRoom": "Control Room"
+    }
+  },
   "common": {
     "logout": "Logout",
     "loggingOut": "Logging out...",
-    "settings": "Settings",
-    "profile": "Profile",
     "help": "Help"
   },
   "breadcrumb": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "settings": "Settings",
     "users": "Users",
     "roles": "Roles",
     "profiles": "Profiles",
     "employmentStatus": "Employment Status",
     "permissions": "Permissions",
     "audit": "Audit",
-    "rewards": "Rewards",
+    "clientList": "Client List",
+    "resellerOverview": "Reseller Overview",
+    "gprsSms": "GPRS & SMS Commands",
+    "gprs": "GPRS",
+    "sms": "SMS",
     "create": "Create",
     "edit": "Edit",
     "assign": "Assign"
+  },
+  "rewardsNav": {
+    "header": {
+      "badge": "Asyst Resources",
+      "title": "Rewards Navigation"
+    },
+    "items": {
+      "resellerOverview": {
+        "label": "Reseller Overview",
+        "description": "Monitor reseller activity and key metrics"
+      },
+      "clientList": {
+        "label": "Client List",
+        "description": "Browse and manage reseller clients"
+      },
+      "resellerUsers": {
+        "label": "Reseller Users",
+        "description": "Manage reseller users"
+      },
+      "resellerRolesPermissions": {
+        "label": "Reseller Roles & Permissions",
+        "description": "Reseller role and permission matrix"
+      },
+      "clientRolesPermissions": {
+        "label": "Client Roles & Permissions",
+        "description": "Client role and permission matrix"
+      },
+      "loginEmailSmsHistory": {
+        "label": "Login, Email, SMS History",
+        "description": "Authentication and communications history"
+      },
+      "clientPaymentReminders": {
+        "label": "Client Payment Reminders",
+        "description": "Track and manage reminder campaigns"
+      },
+      "dataForwarding": {
+        "label": "Data Forwarding",
+        "description": "Forward and route incoming payloads"
+      },
+      "highAssetUsage": {
+        "label": "High Asset Usage",
+        "description": "Surface assets with high activity"
+      },
+      "tools": {
+        "label": "Tools",
+        "description": "Operational utility tools"
+      },
+      "controlRoom": {
+        "label": "Control Room",
+        "description": "System control and monitoring center"
+      },
+      "analytics": {
+        "label": "Analytics",
+        "description": "Data analytics and insights"
+      },
+      "reports": {
+        "label": "Reports",
+        "description": "Generate and view reports"
+      },
+      "gprsSms": {
+        "label": "GPRS & SMS Commands",
+        "description": "Manage telecom command workflows",
+        "children": {
+          "gprs": "GPRS Commands",
+          "sms": "SMS Commands"
+        }
+      },
+      "manageSubResellers": {
+        "label": "Manage Sub-Resellers",
+        "description": "Manage sub-reseller hierarchy"
+      },
+      "resellerSettings": {
+        "label": "Reseller Settings",
+        "description": "Configure reseller preferences"
+      }
+    }
   },
   "errors": {
     "network": {

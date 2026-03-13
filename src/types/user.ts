@@ -15,15 +15,17 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
-  phone: string;
-  profilePhoto: string;
-  salary: number;
-  hireDate: string; // ISO date
-  employmentStatus: EmploymentStatus;
-  profile: Profile;
+  phone?: string | null;
+  profilePhoto?: string | null;
+  salary?: number | null;
+  hireDate?: string | null; // ISO date
+  employmentStatusId?: number | null;
+  profileId?: number | null;
+  employmentStatus?: EmploymentStatus | null;
+  profile?: Profile | null;
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
+  deletedAt?: string | null;
 }
 
 /**
@@ -35,15 +37,23 @@ export interface UserListItem {
   username: string;
   firstName: string;
   lastName: string;
-  profilePhoto: string;
-  profile: {
+  phone?: string | null;
+  profilePhoto?: string | null;
+  hireDate?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  profileId?: number | null;
+  employmentStatusId?: number | null;
+  profile?: {
     id: number;
     label: string;
-  };
-  employmentStatus: {
+  } | null;
+  employmentStatus?: {
     id: number;
     label: string;
-  };
+  } | null;
+  profileLabel?: string | null;
+  employmentStatusLabel?: string | null;
 }
 
 /**

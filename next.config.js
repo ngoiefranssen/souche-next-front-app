@@ -93,10 +93,10 @@ const nextConfig = {
   // 5. Fuite d’info
   poweredByHeader: false,
 
-  // 6. Turbo (optionnel)
-  experimental: {
-    turbo: {},
-  },
+  // 6. Turbo (optionnel) - Désactivé pour éviter les erreurs
+  // experimental: {
+  //   turbo: {},
+  // },
 };
 
 module.exports = withNextIntl(nextConfig);

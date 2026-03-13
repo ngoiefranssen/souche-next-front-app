@@ -56,7 +56,7 @@ describe('Breadcrumb', () => {
   });
 
   it('should render breadcrumb for users page', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users');
+    mockUsePathname.mockReturnValue('/en/settings/users');
     render(<Breadcrumb />);
 
     expect(screen.getByText('Users')).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('Breadcrumb', () => {
   });
 
   it('should render breadcrumb for users create page', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users/create');
+    mockUsePathname.mockReturnValue('/en/settings/users/create');
     render(<Breadcrumb />);
 
     expect(screen.getByText('Users')).toBeInTheDocument();
@@ -72,22 +72,22 @@ describe('Breadcrumb', () => {
   });
 
   it('should render breadcrumb for employment status page', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/employment-status');
+    mockUsePathname.mockReturnValue('/en/settings/employment-status');
     render(<Breadcrumb />);
 
     expect(screen.getByText('Employment Status')).toBeInTheDocument();
   });
 
   it('should make non-last segments clickable', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users/create');
+    mockUsePathname.mockReturnValue('/en/settings/users/create');
     render(<Breadcrumb />);
 
     const usersLink = screen.getByText('Users').closest('a');
-    expect(usersLink).toHaveAttribute('href', '/en/dashboard/users');
+    expect(usersLink).toHaveAttribute('href', '/en/settings/users');
   });
 
   it('should not make last segment clickable', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users/create');
+    mockUsePathname.mockReturnValue('/en/settings/users/create');
     render(<Breadcrumb />);
 
     const createSpan = screen.getByText('Create');
@@ -96,7 +96,7 @@ describe('Breadcrumb', () => {
   });
 
   it('should skip numeric segments (IDs)', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users/123/edit');
+    mockUsePathname.mockReturnValue('/en/settings/users/123/edit');
     render(<Breadcrumb />);
 
     expect(screen.getByText('Users')).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('Breadcrumb', () => {
   });
 
   it('should render home icon with correct link', () => {
-    mockUsePathname.mockReturnValue('/en/dashboard/users');
+    mockUsePathname.mockReturnValue('/en/settings/users');
     render(<Breadcrumb />);
 
     const homeLink = screen.getByLabelText('Home');
@@ -123,11 +123,46 @@ describe('Breadcrumb', () => {
       };
       return translations[key] || key;
     });
-    mockUsePathname.mockReturnValue('/fr/dashboard/users/create');
+    mockUsePathname.mockReturnValue('/fr/settings/users/create');
 
     render(<Breadcrumb />);
 
     expect(screen.getByText('Utilisateurs')).toBeInTheDocument();
     expect(screen.getByText('Créer')).toBeInTheDocument();
+  });
+
+  it('should fallback to a readable label when translation is missing', () => {
+    mockUsePathname.mockReturnValue('/en/rewards/client-list');
+    render(<Breadcrumb />);
+
+    expect(screen.getByText('Client List')).toBeInTheDocument();
+    expect(
+      screen.queryByText('breadcrumb.client-list')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('clientList')).not.toBeInTheDocument();
+  });
+
+  it('should format malformed segments for display', () => {
+    mockUsePathname.mockReturnValue('/en/rewards/client_list');
+    render(<Breadcrumb />);
+    expect(screen.getByText('Client List')).toBeInTheDocument();
+  });
+
+  it('should keep acronyms uppercase when fallback formatting is used', () => {
+    mockUsePathname.mockReturnValue('/en/rewards/gprs_sms');
+    render(<Breadcrumb />);
+    expect(screen.getByText('GPRS SMS')).toBeInTheDocument();
+  });
+
+  it('should fallback when next-intl returns breadcrumb key path', () => {
+    mockUseTranslations.mockReturnValue((key: string) => `breadcrumb.${key}`);
+    mockUsePathname.mockReturnValue('/en/rewards/client-list');
+    render(<Breadcrumb />);
+
+    expect(screen.getByText('Client List')).toBeInTheDocument();
+    expect(
+      screen.queryByText('breadcrumb.client-list')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('breadcrumb.clientList')).not.toBeInTheDocument();
   });
 });

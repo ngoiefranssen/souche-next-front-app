@@ -1,5 +1,11 @@
 {
   "sidebar": {
+    "dashboard": "Dashboard",
+    "map": "Map",
+    "assetInfo": "Asset Info",
+    "trips": "Trips",
+    "zones": "Zones",
+    "alerts": "Alerts",
     "users": "Users",
     "roles": "Roles",
     "profiles": "Profiles",
@@ -7,6 +13,13 @@
     "permissions": "Permissions",
     "audit": "Audit",
     "rewards": "Rewards",
+    "resellerOverview": "Reseller Overview",
+    "clientList": "Client List",
+    "controlRoom": "Control Room",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "modules": "Modules",
+    "video": "Video",
     "settings": "Settings",
     "menu": "Menu"
   },

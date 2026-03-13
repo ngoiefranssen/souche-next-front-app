@@ -431,10 +431,10 @@ All components are optimized for screen reader users:
 npm install -g pa11y
 
 # Test a page
-pa11y http://localhost:3000/dashboard/users
+pa11y http://localhost:3000/settings/users
 
 # Test with specific standard
-pa11y --standard WCAG2AA http://localhost:3000/dashboard/users
+pa11y --standard WCAG2AA http://localhost:3000/settings/users
 ```
 
 ---

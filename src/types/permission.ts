@@ -12,10 +12,13 @@ export interface Permission {
   resource: string;
   action: string;
   description: string | null;
+  category?: string | null;
+  priority?: number | null;
+  isSystem?: boolean;
   conditions: Record<string, unknown> | null; // ABAC conditions
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 }
 
 /**
@@ -35,5 +38,7 @@ export interface PermissionInput {
   resource: string;
   action: string;
   description?: string;
+  category?: string;
+  priority?: number;
   conditions?: Record<string, unknown>;
 }

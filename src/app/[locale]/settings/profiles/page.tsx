@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button/Button';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Can } from '@/components/auth/Can';
 import { useToast } from '@/hooks/useToast';
-import { profilesAPI } from '@/lib/api/profiles';
+import { profilesAPI } from '@/lib/api/settings/profiles';
 import type { Profile, ProfileInput } from '@/types/profile';
 import { Plus } from 'lucide-react';
 

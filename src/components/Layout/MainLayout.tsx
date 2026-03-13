@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Sidebar } from './Sidebar';
 import { DashboardHeader } from './DashboardHeader';
 import { Breadcrumb } from './Breadcrumb';
+import { Sidebar } from './Sidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -21,15 +21,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen bg-gray-50 lg:pl-[88px]">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
         <DashboardHeader onMenuClick={handleMenuClick} />
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-1 lg:p-3">
           {/* Breadcrumb */}
           <Breadcrumb />
           {children}

@@ -35,13 +35,6 @@ export default async function middleware(request: NextRequest) {
   const sessionId = request.cookies.get('sessionId')?.value;
   const token = authToken || sessionId;
 
-  // Si l'utilisateur est déjà connecté et tente d'accéder à une route publique, rediriger vers le dashboard
-  if (isPublicRoute && token) {
-    const localeMatch = pathname.match(/^\/(en|fr|ar)/);
-    const locale = localeMatch ? localeMatch[1] : defaultLocale;
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
-  }
-
   if (isPublicRoute) {
     return intlResponse || NextResponse.next();
   }

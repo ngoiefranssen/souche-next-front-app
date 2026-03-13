@@ -12,9 +12,9 @@ Lazy loading is implemented to reduce initial bundle size and improve page load 
 
 Next.js automatically code-splits at the route level. We've added `loading.tsx` files for each dashboard route to provide better loading states:
 
-- `/dashboard/roles/loading.tsx` - Loading state for roles page
-- `/dashboard/profiles/loading.tsx` - Loading state for profiles page
-- `/dashboard/employment-status/loading.tsx` - Loading state for employment status page
+- `/settings/roles/loading.tsx` - Loading state for roles page
+- `/settings/profiles/loading.tsx` - Loading state for profiles page
+- `/settings/employment-status/loading.tsx` - Loading state for employment status page
 
 These loading states use skeleton loaders to provide visual feedback while the page is loading.
 
@@ -121,6 +121,6 @@ const { Component: LazyChart, preload: preloadChart } = createLazyComponent(
 ## Related Files
 
 - `src/lib/utils/lazyLoad.ts` - Lazy loading utilities
-- `src/app/[locale]/dashboard/*/loading.tsx` - Route loading states
+- `src/app/[locale]/settings/*/loading.tsx` - Route loading states
 - `src/components/*/Lazy*.tsx` - Lazy component wrappers
 - `docs/PERFORMANCE.md` - Overall performance documentation

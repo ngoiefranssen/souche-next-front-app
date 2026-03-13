@@ -199,15 +199,15 @@ npm install -g pa11y
 
 ```bash
 # Test a single page
-pa11y http://localhost:3000/dashboard/users
+pa11y http://localhost:3000/settings/users
 
 # Test with specific standard
 pa11y --standard WCAG2AA http://localhost:3000
 
 # Test multiple pages
-pa11y http://localhost:3000/dashboard/users \
-      http://localhost:3000/dashboard/roles \
-      http://localhost:3000/dashboard/profiles
+pa11y http://localhost:3000/settings/users \
+      http://localhost:3000/settings/roles \
+      http://localhost:3000/settings/profiles
 ```
 
 ## Common Accessibility Issues and Fixes

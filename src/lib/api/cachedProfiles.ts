@@ -4,7 +4,7 @@
  * Cache TTL: 5 minutes
  */
 
-import { profilesAPI, ProfileQueryParams } from './profiles';
+import { profilesAPI, ProfileQueryParams } from './settings/profiles';
 import { getCached, invalidateCache } from '@/lib/utils/cache';
 import type { Profile, ProfileInput } from '@/types/profile';
 import type { PaginatedResponse, ApiResponse } from '@/types/api';

@@ -118,9 +118,9 @@ This document summarizes the responsive design enhancements implemented across t
 
 **Files**:
 
-- `src/app/[locale]/dashboard/roles/page.tsx`
-- `src/app/[locale]/dashboard/profiles/page.tsx`
-- `src/app/[locale]/dashboard/employment-status/page.tsx`
+- `src/app/[locale]/settings/roles/page.tsx`
+- `src/app/[locale]/settings/profiles/page.tsx`
+- `src/app/[locale]/settings/employment-status/page.tsx`
 
 **Changes**:
 
@@ -139,7 +139,7 @@ This document summarizes the responsive design enhancements implemented across t
 
 #### Dashboard Page
 
-**File**: `src/app/[locale]/dashboard/page.tsx`
+**File**: `src/app/[locale]/settings/page.tsx`
 
 **Changes**:
 

@@ -15,8 +15,8 @@ import { FormDatePicker } from '@/components/ui/Form/FormDatePicker';
 import { FormFileUpload } from '@/components/ui/Form/FormFileUpload';
 import { FormError } from '@/components/ui/Form/FormError';
 import { Button } from '@/components/ui/Button/Button';
-import { profilesAPI } from '@/lib/api/profiles';
-import { employmentStatusAPI } from '@/lib/api/employment-status';
+import { profilesAPI } from '@/lib/api/settings/profiles';
+import { employmentStatusAPI } from '@/lib/api/settings/employment-status';
 import type { Profile } from '@/types/profile';
 import type { EmploymentStatus } from '@/types/employment-status';
 import {

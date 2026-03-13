@@ -8,9 +8,9 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ProfilesPage from '@/app/[locale]/dashboard/profiles/page';
+import ProfilesPage from '@/app/[locale]/settings/profiles/page';
 import { PermissionProvider } from '@/contexts/PermissionContext';
-import { profilesAPI } from '@/lib/api/profiles';
+import { profilesAPI } from '@/lib/api/settings/profiles';
 import type { Profile } from '@/types/profile';
 
 // Mock the API
@@ -40,7 +40,7 @@ jest.mock('next/navigation', () => ({
     replace: jest.fn(),
     prefetch: jest.fn(),
   }),
-  usePathname: () => '/dashboard/profiles',
+  usePathname: () => '/settings/profiles',
 }));
 
 // Test data

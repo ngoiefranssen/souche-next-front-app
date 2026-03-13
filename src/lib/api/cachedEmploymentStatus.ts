@@ -7,7 +7,7 @@
 import {
   employmentStatusAPI,
   EmploymentStatusQueryParams,
-} from './employment-status';
+} from './settings/employment-status';
 import { getCached, invalidateCache } from '@/lib/utils/cache';
 import type {
   EmploymentStatus,

@@ -20,7 +20,7 @@ Performance optimizations have been implemented across multiple areas to improve
 **Files:**
 
 - `src/lib/utils/lazyLoad.ts` - Lazy loading utilities
-- `src/app/[locale]/dashboard/*/loading.tsx` - Loading states
+- `src/app/[locale]/settings/*/loading.tsx` - Loading states
 - `src/components/*/Lazy*.tsx` - Lazy component wrappers
 - `docs/LAZY_LOADING.md` - Documentation
 

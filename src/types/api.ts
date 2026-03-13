@@ -17,15 +17,17 @@ export interface ApiResponse<T> {
  */
 export interface PaginatedResponse<T> {
   status: 'success';
-  data: {
-    items: T[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
+    hasPrevPage?: boolean;
   };
+  filters?: Record<string, unknown>;
 }
 
 /**

@@ -1,4 +1,18 @@
 {
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "map": "الخريطة",
+    "assetInfo": "معلومات الأصل",
+    "trips": "الرحلات",
+    "zones": "المناطق",
+    "alerts": "التنبيهات",
+    "modules": "الوحدات",
+    "video": "الفيديو",
+    "reports": "التقارير",
+    "controlRoom": "غرفة التحكم",
+    "settings": "الإعدادات",
+    "menu": "القائمة"
+  },
   "errors": {
     "forbidden": {
       "title": "تم رفض الوصول",

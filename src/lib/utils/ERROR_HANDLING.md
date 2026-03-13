@@ -229,7 +229,7 @@ function CreateUserForm() {
     try {
       await apiClient.post('/users', data);
       toast.success('Utilisateur créé avec succès');
-      router.push('/dashboard/users');
+      router.push('/settings/users');
     } catch (error) {
       // Logger l'erreur avec contexte
       logError(error, {

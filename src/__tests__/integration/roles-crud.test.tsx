@@ -8,7 +8,7 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import RolesPage from '@/app/[locale]/dashboard/roles/page';
+import RolesPage from '@/app/[locale]/settings/roles/page';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { rolesAPI } from '@/lib/api/roles';
 import type { Role } from '@/types/role';
@@ -40,7 +40,7 @@ jest.mock('next/navigation', () => ({
     replace: jest.fn(),
     prefetch: jest.fn(),
   }),
-  usePathname: () => '/dashboard/roles',
+  usePathname: () => '/settings/roles',
 }));
 
 // Test data

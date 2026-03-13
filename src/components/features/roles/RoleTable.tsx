@@ -112,7 +112,7 @@ export const RoleTable: React.FC<RoleTableProps> = ({
     {
       key: '_count',
       label: 'Nombre de profils',
-      sortable: true,
+      sortable: false,
       filterable: false,
       align: 'center',
       render: (value, row) => {
