@@ -102,7 +102,7 @@ export default function UsersPage() {
 
   return (
     <ProtectedRoute permission="users:read">
-      <div className="mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
+      <div className="w-full px-1 sm:px-2 lg:px-2 py-2 sm:py-3">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">

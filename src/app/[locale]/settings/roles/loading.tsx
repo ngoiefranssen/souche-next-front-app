@@ -6,7 +6,7 @@ import { Skeleton, TableSkeleton } from '@/components/ui/Skeleton';
  */
 export default function RolesLoading() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
+    <div className="w-full px-1 sm:px-2 lg:px-2 py-2 sm:py-3">
       {/* Header skeleton */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div className="flex-1">

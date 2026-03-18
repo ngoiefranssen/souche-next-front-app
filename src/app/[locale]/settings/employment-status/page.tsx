@@ -190,7 +190,7 @@ export default function EmploymentStatusPage() {
 
   return (
     <ProtectedRoute permission="employment-status:read">
-      <div className="mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
+      <div className="w-full px-1 sm:px-2 lg:px-2 py-2 sm:py-3">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">

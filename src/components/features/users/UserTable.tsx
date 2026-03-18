@@ -41,6 +41,8 @@ export const UserTable: React.FC<UserTableProps> = ({
       label: "Nom d'utilisateur",
       sortable: true,
       filterable: true,
+      frozen: 'left',
+      width: '220px',
       render: value => (
         <span className="font-medium text-gray-900">{String(value)}</span>
       ),
@@ -123,6 +125,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       actions={actions}
       onSort={onSort}
       onFilter={onFilter}
+      frozenActions="right"
       emptyMessage="Aucun utilisateur trouvé"
       className="mt-2"
     />

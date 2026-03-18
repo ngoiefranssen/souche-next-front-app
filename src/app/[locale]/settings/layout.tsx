@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         className="mb-3 lg:mb-0 lg:fixed lg:left-[96px] lg:top-[72px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto lg:z-20"
       />
 
-      <main className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-2 lg:ml-[312px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto">
+      <main className="min-w-0 lg:ml-[301px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto">
         {children}
       </main>
     </div>

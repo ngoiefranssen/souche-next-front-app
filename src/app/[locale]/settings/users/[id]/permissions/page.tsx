@@ -377,7 +377,7 @@ export default function UserPermissionsPage() {
 
   return (
     <ProtectedRoute permission="permissions:manage">
-      <div className="mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 py-2 sm:py-3 space-y-4">
+      <div className="w-full px-1 sm:px-2 lg:px-2 py-2 sm:py-3 space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">

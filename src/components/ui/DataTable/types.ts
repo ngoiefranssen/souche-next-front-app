@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+export type FrozenColumnPosition = 'left' | 'right';
+
 export interface Column<T = object> {
   key: string;
   label: string;
@@ -9,6 +11,7 @@ export interface Column<T = object> {
   width?: string;
   align?: 'left' | 'center' | 'right';
   className?: string;
+  frozen?: FrozenColumnPosition;
 }
 
 export interface DataTableProps<T = object> {
@@ -21,6 +24,8 @@ export interface DataTableProps<T = object> {
   onFilter?: (filters: Record<string, unknown>) => void;
   actions?: ActionButton<T>[];
   selectable?: boolean;
+  frozenSelection?: FrozenColumnPosition | false;
+  frozenActions?: FrozenColumnPosition | false;
   onSelectionChange?: (selected: T[]) => void;
   emptyMessage?: string;
   className?: string;

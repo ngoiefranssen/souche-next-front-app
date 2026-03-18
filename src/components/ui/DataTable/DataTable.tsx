@@ -1,7 +1,13 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { DataTableProps, SortConfig } from './types';
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react';
+import { DataTableProps, SortConfig, FrozenColumnPosition } from './types';
 import { DataTableHeader } from './DataTableHeader';
 import { DataTableBody } from './DataTableBody';
 import { DataTablePagination } from './DataTablePagination';
@@ -9,6 +15,16 @@ import { DataTableFilters } from '@/components/ui/DataTable/DataTableFilters';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { DataTableMobile } from './DataTableMobile';
 import { Eye } from 'lucide-react';
+
+const SELECTION_CELL_ID = '__selection__';
+const ACTIONS_CELL_ID = '__actions__';
+const COLUMN_CELL_PREFIX = 'column:';
+
+interface StickyCellMeta {
+  side: FrozenColumnPosition;
+  offset: number;
+  boundary: boolean;
+}
 
 export function DataTable<T extends object>({
   data,
@@ -20,6 +36,8 @@ export function DataTable<T extends object>({
   onFilter,
   actions,
   selectable = false,
+  frozenSelection = false,
+  frozenActions = false,
   onSelectionChange,
   emptyMessage = 'Aucune donnée disponible',
   className = '',
@@ -30,7 +48,11 @@ export function DataTable<T extends object>({
   });
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [stickyMetaById, setStickyMetaById] = useState<
+    Record<string, StickyCellMeta>
+  >({});
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const tableRef = useRef<HTMLTableElement>(null);
 
   // Gestion du tri
   const handleSort = (key: string) => {
@@ -142,6 +164,152 @@ export function DataTable<T extends object>({
     return baseActions.length > 0 ? baseActions : undefined;
   }, [actions, onRowClick]);
 
+  const hasActions = Boolean(tableActions && tableActions.length > 0);
+
+  const visualCellIds = useMemo(() => {
+    const ids: string[] = [];
+
+    if (selectable) {
+      ids.push(SELECTION_CELL_ID);
+    }
+
+    columns.forEach(column => {
+      ids.push(`${COLUMN_CELL_PREFIX}${column.key}`);
+    });
+
+    if (hasActions) {
+      ids.push(ACTIONS_CELL_ID);
+    }
+
+    return ids;
+  }, [selectable, columns, hasActions]);
+
+  const frozenSideById = useMemo(() => {
+    const map = new Map<string, FrozenColumnPosition>();
+
+    if (selectable && frozenSelection) {
+      map.set(SELECTION_CELL_ID, frozenSelection);
+    }
+
+    columns.forEach(column => {
+      if (column.frozen) {
+        map.set(`${COLUMN_CELL_PREFIX}${column.key}`, column.frozen);
+      }
+    });
+
+    if (hasActions && frozenActions) {
+      map.set(ACTIONS_CELL_ID, frozenActions);
+    }
+
+    return map;
+  }, [selectable, frozenSelection, columns, hasActions, frozenActions]);
+
+  const updateStickyOffsets = useCallback(() => {
+    if (isMobile || frozenSideById.size === 0) {
+      setStickyMetaById({});
+      return;
+    }
+
+    const tableElement = tableRef.current;
+    if (!tableElement) return;
+
+    const headerCells = Array.from(
+      tableElement.querySelectorAll('thead th')
+    ) as HTMLElement[];
+
+    if (
+      headerCells.length !== visualCellIds.length ||
+      headerCells.length === 0
+    ) {
+      setStickyMetaById({});
+      return;
+    }
+
+    const widths = headerCells.map(cell => cell.getBoundingClientRect().width);
+    const leftStickyIds = visualCellIds.filter(
+      id => frozenSideById.get(id) === 'left'
+    );
+    const rightStickyIds = visualCellIds.filter(
+      id => frozenSideById.get(id) === 'right'
+    );
+
+    const nextMeta: Record<string, StickyCellMeta> = {};
+
+    let currentLeftOffset = 0;
+    for (let index = 0; index < visualCellIds.length; index += 1) {
+      const id = visualCellIds[index];
+      const side = frozenSideById.get(id);
+
+      if (side === 'left') {
+        nextMeta[id] = {
+          side,
+          offset: currentLeftOffset,
+          boundary: id === leftStickyIds[leftStickyIds.length - 1],
+        };
+        currentLeftOffset += widths[index];
+      }
+    }
+
+    let currentRightOffset = 0;
+    for (let index = visualCellIds.length - 1; index >= 0; index -= 1) {
+      const id = visualCellIds[index];
+      const side = frozenSideById.get(id);
+
+      if (side === 'right') {
+        nextMeta[id] = {
+          side,
+          offset: currentRightOffset,
+          boundary: id === rightStickyIds[0],
+        };
+        currentRightOffset += widths[index];
+      }
+    }
+
+    setStickyMetaById(nextMeta);
+  }, [isMobile, frozenSideById, visualCellIds]);
+
+  useEffect(() => {
+    updateStickyOffsets();
+
+    const tableElement = tableRef.current;
+    if (!tableElement || isMobile || frozenSideById.size === 0) {
+      return;
+    }
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateStickyOffsets();
+      });
+      resizeObserver.observe(tableElement);
+    }
+
+    window.addEventListener('resize', updateStickyOffsets);
+
+    return () => {
+      window.removeEventListener('resize', updateStickyOffsets);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [updateStickyOffsets, isMobile, frozenSideById, processedData.length]);
+
+  const columnStickyMeta = useMemo(() => {
+    const map: Record<string, StickyCellMeta> = {};
+
+    columns.forEach(column => {
+      const stickyMeta = stickyMetaById[`${COLUMN_CELL_PREFIX}${column.key}`];
+      if (stickyMeta) {
+        map[column.key] = stickyMeta;
+      }
+    });
+
+    return map;
+  }, [columns, stickyMetaById]);
+
+  const selectionStickyMeta = stickyMetaById[SELECTION_CELL_ID];
+  const actionsStickyMeta = stickyMetaById[ACTIONS_CELL_ID];
+
   return (
     <div className={className}>
       {/* Filtres (hors du conteneur du tableau) */}
@@ -173,7 +341,10 @@ export function DataTable<T extends object>({
           <div className="overflow-x-auto overflow-y-visible -mx-4 sm:mx-0">
             <div className="inline-block min-w-full align-middle">
               <div className="overflow-visible">
-                <table className="min-w-full divide-y divide-gray-200">
+                <table
+                  ref={tableRef}
+                  className="min-w-full divide-y divide-gray-200"
+                >
                   <DataTableHeader
                     columns={columns}
                     sortConfig={sortConfig}
@@ -188,6 +359,9 @@ export function DataTable<T extends object>({
                       tableActions && tableActions.length > 0
                     )}
                     actionsLabel="Actions"
+                    columnStickyMeta={columnStickyMeta}
+                    selectionStickyMeta={selectionStickyMeta}
+                    actionsStickyMeta={actionsStickyMeta}
                   />
                   <DataTableBody
                     data={processedData}
@@ -198,6 +372,9 @@ export function DataTable<T extends object>({
                     selectable={selectable}
                     selectedRows={selectedRows}
                     onSelectRow={handleSelectRow}
+                    columnStickyMeta={columnStickyMeta}
+                    selectionStickyMeta={selectionStickyMeta}
+                    actionsStickyMeta={actionsStickyMeta}
                   />
                 </table>
               </div>

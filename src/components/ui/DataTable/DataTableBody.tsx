@@ -1,6 +1,16 @@
-import type { ReactNode } from 'react';
-import { Column, ActionButton } from '@/components/ui/DataTable/types';
+import type { CSSProperties, ReactNode } from 'react';
+import {
+  Column,
+  ActionButton,
+  FrozenColumnPosition,
+} from '@/components/ui/DataTable/types';
 import { DataTableActions } from '@/components/ui/DataTable/DataTableActions';
+
+interface StickyCellMeta {
+  side: FrozenColumnPosition;
+  offset: number;
+  boundary: boolean;
+}
 
 interface DataTableBodyProps<T> {
   data: T[];
@@ -12,6 +22,9 @@ interface DataTableBodyProps<T> {
   selectable: boolean;
   selectedRows: Set<number>;
   onSelectRow: (index: number, checked: boolean) => void;
+  columnStickyMeta?: Record<string, StickyCellMeta>;
+  selectionStickyMeta?: StickyCellMeta;
+  actionsStickyMeta?: StickyCellMeta;
 }
 
 export function DataTableBody<T extends object>({
@@ -24,9 +37,44 @@ export function DataTableBody<T extends object>({
   selectable,
   selectedRows,
   onSelectRow,
+  columnStickyMeta = {},
+  selectionStickyMeta,
+  actionsStickyMeta,
 }: DataTableBodyProps<T>) {
   const getColumnValue = (row: T, key: string): unknown =>
     (row as Record<string, unknown>)[key];
+
+  const getStickyStyle = (
+    stickyMeta?: StickyCellMeta
+  ): CSSProperties | undefined => {
+    if (!stickyMeta) return undefined;
+
+    return stickyMeta.side === 'left'
+      ? { left: `${stickyMeta.offset}px` }
+      : { right: `${stickyMeta.offset}px` };
+  };
+
+  const getStickyClassName = (
+    stickyMeta: StickyCellMeta | undefined,
+    rowSelected: boolean,
+    rowClickable: boolean
+  ): string => {
+    if (!stickyMeta) return '';
+
+    const boundaryClass = stickyMeta.boundary
+      ? stickyMeta.side === 'left'
+        ? 'shadow-[2px_0_0_0_#E5E7EB]'
+        : 'shadow-[-2px_0_0_0_#E5E7EB]'
+      : '';
+
+    const backgroundClass = rowSelected
+      ? 'bg-blue-50'
+      : rowClickable
+        ? 'bg-white group-hover:bg-gray-50'
+        : 'bg-white';
+
+    return `sticky z-10 ${backgroundClass} ${boundaryClass}`;
+  };
 
   if (loading) {
     return (
@@ -68,13 +116,16 @@ export function DataTableBody<T extends object>({
           key={rowIndex}
           onClick={() => onRowClick?.(row, rowIndex)}
           className={`
-            transition-colors
+            group transition-colors
             ${onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''}
             ${selectedRows.has(rowIndex) ? 'bg-blue-50' : ''}
           `}
         >
           {selectable && (
-            <td className="px-6 py-4 w-12">
+            <td
+              style={getStickyStyle(selectionStickyMeta)}
+              className={`px-6 py-4 w-12 ${getStickyClassName(selectionStickyMeta, selectedRows.has(rowIndex), Boolean(onRowClick))}`}
+            >
               <input
                 type="checkbox"
                 checked={selectedRows.has(rowIndex)}
@@ -93,24 +144,37 @@ export function DataTableBody<T extends object>({
               />
             </td>
           )}
-          {columns.map(column => (
-            <td
-              key={column.key}
-              className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${
-                column.align === 'center'
-                  ? 'text-center'
-                  : column.align === 'right'
-                    ? 'text-right'
-                    : 'text-left'
-              } ${column.className || ''}`}
-            >
-              {column.render
-                ? column.render(getColumnValue(row, column.key), row, rowIndex)
-                : (getColumnValue(row, column.key) as ReactNode)}
-            </td>
-          ))}
+          {columns.map(column => {
+            const stickyMeta = columnStickyMeta[column.key];
+            const rowSelected = selectedRows.has(rowIndex);
+
+            return (
+              <td
+                key={column.key}
+                style={getStickyStyle(stickyMeta)}
+                className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${
+                  column.align === 'center'
+                    ? 'text-center'
+                    : column.align === 'right'
+                      ? 'text-right'
+                      : 'text-left'
+                } ${column.className || ''} ${getStickyClassName(stickyMeta, rowSelected, Boolean(onRowClick))}`}
+              >
+                {column.render
+                  ? column.render(
+                      getColumnValue(row, column.key),
+                      row,
+                      rowIndex
+                    )
+                  : (getColumnValue(row, column.key) as ReactNode)}
+              </td>
+            );
+          })}
           {actions && actions.length > 0 && (
-            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <td
+              style={getStickyStyle(actionsStickyMeta)}
+              className={`px-6 py-4 whitespace-nowrap text-right text-sm font-medium ${getStickyClassName(actionsStickyMeta, selectedRows.has(rowIndex), Boolean(onRowClick))}`}
+            >
               <DataTableActions
                 row={row}
                 rowIndex={rowIndex}

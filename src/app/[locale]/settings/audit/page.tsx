@@ -153,7 +153,7 @@ export default function AuditPage() {
 
   return (
     <ProtectedRoute permission="audit:read">
-      <div className="mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 py-2 sm:py-3 space-y-4">
+      <div className="w-full px-1 sm:px-2 lg:px-2 py-2 sm:py-3 space-y-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Journal d&apos;audit

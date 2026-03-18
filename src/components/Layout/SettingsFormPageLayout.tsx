@@ -26,7 +26,7 @@ export default function SettingsFormPageLayout({
   return (
     <div
       className={[
-        'mx-auto w-full max-w-4xl px-2 sm:px-3 lg:px-4 space-y-3',
+        'w-full px-1 sm:px-2 lg:px-2 space-y-3',
         verticalSpacingClassName,
         className,
       ]
