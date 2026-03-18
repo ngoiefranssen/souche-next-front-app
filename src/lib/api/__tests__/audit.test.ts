@@ -15,6 +15,14 @@ jest.mock('../client', () => ({
   },
 }));
 
+const assertDefined = <T>(value: T | undefined): T => {
+  expect(value).toBeDefined();
+  if (value === undefined) {
+    throw new Error('Expected value to be defined');
+  }
+  return value;
+};
+
 describe('Audit API Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -245,10 +253,11 @@ describe('Audit API Service', () => {
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await auditAPI.getById(1);
+      const data = assertDefined(result.data);
 
-      expect(result.data).toHaveProperty('success', false);
-      expect(result.data).toHaveProperty('errorMessage', 'Role is in use');
-      expect(result.data.details).toEqual({ roleLabel: 'Manager' });
+      expect(data).toHaveProperty('success', false);
+      expect(data).toHaveProperty('errorMessage', 'Role is in use');
+      expect(data.details).toEqual({ roleLabel: 'Manager' });
     });
   });
 
@@ -373,12 +382,19 @@ describe('Audit API Service', () => {
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await auditAPI.getStats();
+      const data = assertDefined(result.data) as unknown as {
+        totalLogs: number;
+        successRate: number;
+        topActions: Array<{ action: string; count: number }>;
+        topResources: Array<{ resource: string; count: number }>;
+        topUsers: Array<{ userId: number; username: string; count: number }>;
+      };
 
-      expect(result.data.totalLogs).toBe(5000);
-      expect(result.data.successRate).toBe(0.92);
-      expect(result.data.topActions).toHaveLength(2);
-      expect(result.data.topResources).toHaveLength(2);
-      expect(result.data.topUsers).toHaveLength(2);
+      expect(data.totalLogs).toBe(5000);
+      expect(data.successRate).toBe(0.92);
+      expect(data.topActions).toHaveLength(2);
+      expect(data.topResources).toHaveLength(2);
+      expect(data.topUsers).toHaveLength(2);
     });
   });
 
@@ -485,10 +501,11 @@ describe('Audit API Service', () => {
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await auditAPI.getById(1);
+      const data = assertDefined(result.data);
 
-      expect(result.data.user).toBeDefined();
-      expect(result.data.user?.username).toBe('john.doe');
-      expect(result.data.user?.email).toBe('john@example.com');
+      expect(data.user).toBeDefined();
+      expect(data.user?.username).toBe('john.doe');
+      expect(data.user?.email).toBe('john@example.com');
     });
 
     it('should correctly parse audit log with complex details', async () => {
@@ -510,11 +527,17 @@ describe('Audit API Service', () => {
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await auditAPI.getById(1);
+      const data = assertDefined(result.data);
+      const details = assertDefined(data.details) as {
+        before?: Record<string, unknown>;
+        after?: Record<string, unknown>;
+        changes?: string[];
+      };
 
-      expect(result.data.details).toHaveProperty('before');
-      expect(result.data.details).toHaveProperty('after');
-      expect(result.data.details).toHaveProperty('changes');
-      expect(result.data.details.changes).toEqual(['email', 'firstName']);
+      expect(details).toHaveProperty('before');
+      expect(details).toHaveProperty('after');
+      expect(details).toHaveProperty('changes');
+      expect(details.changes).toEqual(['email', 'firstName']);
     });
 
     it('should correctly parse paginated response with default sort', async () => {
@@ -539,11 +562,11 @@ describe('Audit API Service', () => {
 
       const result = await auditAPI.getAll();
 
-      expect(result.data.items).toHaveLength(3);
+      expect(result.data).toHaveLength(3);
       // Verify descending order by timestamp (most recent first)
-      expect(result.data.items[0].id).toBe(3);
-      expect(result.data.items[1].id).toBe(2);
-      expect(result.data.items[2].id).toBe(1);
+      expect(result.data[0].id).toBe(3);
+      expect(result.data[1].id).toBe(2);
+      expect(result.data[2].id).toBe(1);
     });
 
     it('should correctly parse statistics with zero values', async () => {
@@ -561,10 +584,15 @@ describe('Audit API Service', () => {
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await auditAPI.getStats();
+      const data = assertDefined(result.data) as unknown as {
+        totalLogs: number;
+        successRate: number;
+        topActions: unknown[];
+      };
 
-      expect(result.data.totalLogs).toBe(0);
-      expect(result.data.successRate).toBe(0);
-      expect(result.data.topActions).toEqual([]);
+      expect(data.totalLogs).toBe(0);
+      expect(data.successRate).toBe(0);
+      expect(data.topActions).toEqual([]);
     });
   });
 

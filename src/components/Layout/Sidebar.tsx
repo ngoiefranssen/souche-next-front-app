@@ -4,34 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  AlignJustify,
-  Bell,
-  ChevronDown,
-  FileText,
-  Info,
-  LineChart,
-  Map,
-  Network,
-  Route,
-  Settings,
-  TowerControl,
-  Video,
-} from 'lucide-react';
+import { AlignJustify, LineChart, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface SidebarItem {
-  key:
-    | 'dashboard'
-    | 'map'
-    | 'assetInfo'
-    | 'trips'
-    | 'zones'
-    | 'alerts'
-    | 'reports'
-    | 'modules'
-    | 'video'
-    | 'controlRoom';
+  key: 'dashboard';
   href: string;
   icon: LucideIcon;
 }
@@ -41,51 +18,6 @@ const sidebarItems: SidebarItem[] = [
     key: 'dashboard',
     href: '/dashboard',
     icon: LineChart,
-  },
-  // {
-  //   key: 'map',
-  //   href: '/rewards/reseller-overview',
-  //   icon: Navigation,
-  // },
-  {
-    key: 'assetInfo',
-    href: '/settings/profiles',
-    icon: Info,
-  },
-  {
-    key: 'trips',
-    href: '/rewards/client-list',
-    icon: Route,
-  },
-  {
-    key: 'zones',
-    href: '/settings/roles',
-    icon: Map,
-  },
-  {
-    key: 'alerts',
-    href: '/settings/employment-status',
-    icon: Bell,
-  },
-  {
-    key: 'reports',
-    href: '/rewards/reports',
-    icon: FileText,
-  },
-  {
-    key: 'modules',
-    href: '/rewards/gprs-sms',
-    icon: Network,
-  },
-  {
-    key: 'video',
-    href: '/rewards/analytics',
-    icon: Video,
-  },
-  {
-    key: 'controlRoom',
-    href: '/rewards/control-room',
-    icon: TowerControl,
   },
 ];
 
@@ -136,12 +68,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           >
             <AlignJustify className="h-[14px] w-[14px]" strokeWidth={2} />
           </button>
-          <div className="flex h-[42px] w-[62px] items-center justify-center rounded-[9px] bg-[#4E90CA] shadow-[0_8px_14px_rgba(8,30,58,0.25)]">
-            <ChevronDown
-              className="h-[16px] w-[16px] text-white"
-              strokeWidth={2.3}
-            />
-          </div>
         </div>
 
         <nav className="mt-[8px] flex w-full flex-1 flex-col items-center gap-[2px] overflow-y-auto pb-[6px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

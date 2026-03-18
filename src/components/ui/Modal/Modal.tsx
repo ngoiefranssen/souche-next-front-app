@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { AppDialog, AppDialogTitle } from '@/components/ui/Headless';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -11,6 +12,9 @@ export interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
+  headerClassName?: string;
+  titleClassName?: string;
+  closeButtonClassName?: string;
 }
 
 const sizeClasses = {
@@ -28,80 +32,60 @@ export const Modal: React.FC<ModalProps> = ({
   size = 'md',
   showCloseButton = true,
   closeOnOverlayClick = true,
+  headerClassName,
+  titleClassName,
+  closeButtonClassName,
 }) => {
-  // Handle Escape key press
-  const handleEscape = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    },
-    [isOpen, onClose]
-  );
-
   useEffect(() => {
-    if (isOpen) {
-      // Block body scroll when modal is open
-      document.body.style.overflow = 'hidden';
+    if (!isOpen) return undefined;
 
-      // Add escape key listener
-      document.addEventListener('keydown', handleEscape);
+    // Keep scroll behavior consistent with previous implementation.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
-      return () => {
-        document.body.style.overflow = 'unset';
-        document.removeEventListener('keydown', handleEscape);
-      };
-    }
-  }, [isOpen, handleEscape]);
+    return () => {
+      document.body.style.overflow = previousOverflow || 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (closeOnOverlayClick && e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 animate-fade-in"
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
+    <AppDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnBackdropClick={closeOnOverlayClick}
+      overlayClassName="animate-fade-in"
+      panelClassName={`
+        max-h-[90vh] sm:max-h-[85vh] flex flex-col animate-slide-up
+        ${sizeClasses[size]}
+      `}
     >
+      {/* Header */}
       <div
-        className={`
-          relative w-full ${sizeClasses[size]} 
-          bg-white rounded-lg shadow-xl 
-          animate-slide-up
-          max-h-[90vh] sm:max-h-[85vh] flex flex-col
-        `}
+        className={`flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 ${headerClassName ?? ''}`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-          <h2
-            id="modal-title"
-            className="text-base sm:text-lg font-semibold text-gray-900"
+        <AppDialogTitle
+          id="modal-title"
+          className={`text-base sm:text-lg font-semibold text-gray-900 ${titleClassName ?? ''}`}
+        >
+          {title}
+        </AppDialogTitle>
+        {showCloseButton && (
+          <button
+            onClick={onClose}
+            className={`text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-[#356ca5] rounded-lg p-1 ${closeButtonClassName ?? ''}`}
+            aria-label="Fermer"
           >
-            {title}
-          </h2>
-          {showCloseButton && (
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] rounded-lg p-1"
-              aria-label="Fermer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="px-4 sm:px-6 py-3 sm:py-4 overflow-y-auto flex-1">
-          {children}
-        </div>
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
-    </div>
+
+      {/* Content */}
+      <div className="px-4 sm:px-6 py-3 sm:py-4 overflow-y-auto flex-1">
+        {children}
+      </div>
+    </AppDialog>
   );
 };

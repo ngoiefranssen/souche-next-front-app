@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/DataTable/types';
 import { Role } from '@/types/role';
 import { Badge } from '@/components/ui/Badge/Badge';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, KeyRound, Trash2 } from 'lucide-react';
 import { usePermission } from '@/hooks/usePermission';
 
 interface RoleTableProps {
@@ -37,6 +37,11 @@ interface RoleTableProps {
    * Callback appelé lors du clic sur le bouton Supprimer
    */
   onDelete?: (role: Role) => void;
+
+  /**
+   * Callback appelé lors du clic sur le bouton Permissions
+   */
+  onManagePermissions?: (role: Role) => void;
 
   /**
    * Callback appelé lors du tri
@@ -78,6 +83,7 @@ export const RoleTable: React.FC<RoleTableProps> = ({
   pagination,
   onEdit,
   onDelete,
+  onManagePermissions,
   onSort,
   onFilter,
 }) => {
@@ -129,7 +135,7 @@ export const RoleTable: React.FC<RoleTableProps> = ({
   // Définition des actions
   const actions: ActionButton<Role>[] = [];
 
-  // Action Modifier (si permission roles:update)
+  // Action Modifier
   if (onEdit && hasPermission('roles:update')) {
     actions.push({
       label: 'Modifier',
@@ -139,7 +145,17 @@ export const RoleTable: React.FC<RoleTableProps> = ({
     });
   }
 
-  // Action Supprimer (si permission roles:delete)
+  // Action Permissions
+  if (onManagePermissions && hasPermission('permissions:update')) {
+    actions.push({
+      label: 'Permissions',
+      icon: <KeyRound className="w-4 h-4" />,
+      onClick: onManagePermissions,
+      variant: 'secondary',
+    });
+  }
+
+  // Action Supprimer
   if (onDelete && hasPermission('roles:delete')) {
     actions.push({
       label: 'Supprimer',

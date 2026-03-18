@@ -140,6 +140,9 @@ export default function UsersPage() {
           onEdit={user =>
             router.push(`/${locale}/settings/users/${user.id}/edit`)
           }
+          onManagePermissions={user =>
+            router.push(`/${locale}/settings/users/${user.id}/permissions`)
+          }
           onDelete={openDeleteModal}
           onFilter={handleFilter}
         />

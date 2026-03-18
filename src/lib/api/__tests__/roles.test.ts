@@ -16,6 +16,14 @@ jest.mock('../client', () => ({
   },
 }));
 
+const assertDefined = <T>(value: T | undefined): T => {
+  expect(value).toBeDefined();
+  if (value === undefined) {
+    throw new Error('Expected value to be defined');
+  }
+  return value;
+};
+
 describe('Roles API Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -480,27 +488,26 @@ describe('Roles API Service', () => {
 
       const result = await rolesAPI.getById(1);
 
-      expect(result.data).toHaveProperty('id', 1);
-      expect(result.data).toHaveProperty('label', 'Admin');
-      expect(result.data).toHaveProperty('description', 'Administrator role');
-      expect(result.data).toHaveProperty('_count');
-      expect(result.data._count).toHaveProperty('profiles', 5);
+      const data = assertDefined(result.data);
+      expect(data).toHaveProperty('id', 1);
+      expect(data).toHaveProperty('label', 'Admin');
+      expect(data).toHaveProperty('description', 'Administrator role');
+      expect(data).toHaveProperty('_count');
+      expect(data._count).toHaveProperty('profiles', 5);
     });
 
     it('should correctly parse paginated response', async () => {
       const mockResponse = {
         status: 'success',
-        data: {
-          items: [
-            { id: 1, label: 'Admin' },
-            { id: 2, label: 'User' },
-          ],
-          pagination: {
-            page: 1,
-            limit: 10,
-            total: 2,
-            totalPages: 1,
-          },
+        data: [
+          { id: 1, label: 'Admin', description: 'Administrator role' },
+          { id: 2, label: 'User', description: 'Standard user role' },
+        ],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 2,
+          totalPages: 1,
         },
       };
 
@@ -508,9 +515,9 @@ describe('Roles API Service', () => {
 
       const result = await rolesAPI.getAll();
 
-      expect(result.data.items).toHaveLength(2);
-      expect(result.data.pagination).toHaveProperty('page', 1);
-      expect(result.data.pagination).toHaveProperty('total', 2);
+      expect(result.data).toHaveLength(2);
+      expect(result.pagination).toHaveProperty('page', 1);
+      expect(result.pagination).toHaveProperty('total', 2);
     });
   });
 });

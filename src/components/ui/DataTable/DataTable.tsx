@@ -8,8 +8,9 @@ import { DataTablePagination } from './DataTablePagination';
 import { DataTableFilters } from '@/components/ui/DataTable/DataTableFilters';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { DataTableMobile } from './DataTableMobile';
+import { Eye } from 'lucide-react';
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   data,
   columns,
   loading = false,
@@ -75,7 +76,12 @@ export function DataTable<T extends Record<string, unknown>>({
 
         if (aValue === bValue) return 0;
 
-        const comparison = aValue > bValue ? 1 : -1;
+        const aComparable = String(aValue ?? '').toLowerCase();
+        const bComparable = String(bValue ?? '').toLowerCase();
+        const comparison = aComparable.localeCompare(bComparable, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        });
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
     }
@@ -121,67 +127,87 @@ export function DataTable<T extends Record<string, unknown>>({
   };
 
   const filterableColumns = columns.filter(col => col.filterable);
+  const tableActions = useMemo(() => {
+    const baseActions = actions ? [...actions] : [];
+
+    if (onRowClick) {
+      baseActions.unshift({
+        label: 'Détails',
+        icon: <Eye className="w-4 h-4" />,
+        onClick: (row, rowIndex) => onRowClick(row, rowIndex),
+        variant: 'secondary',
+      });
+    }
+
+    return baseActions.length > 0 ? baseActions : undefined;
+  }, [actions, onRowClick]);
 
   return (
-    <div className={`bg-white rounded-lg shadow ${className}`}>
-      {/* Filtres */}
+    <div className={className}>
+      {/* Filtres (hors du conteneur du tableau) */}
       {filterableColumns.length > 0 && (
-        <DataTableFilters
-          columns={filterableColumns}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-      )}
-
-      {/* Vue Mobile (Cards) */}
-      {isMobile ? (
-        <DataTableMobile
-          data={processedData}
-          columns={columns}
-          loading={loading}
-          emptyMessage={emptyMessage}
-          onRowClick={onRowClick}
-          actions={actions}
-          selectable={selectable}
-          selectedRows={selectedRows}
-          onSelectRow={handleSelectRow}
-        />
-      ) : (
-        /* Vue Desktop (Table) - Scrollable horizontalement sur petits écrans */
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <div className="inline-block min-w-full align-middle">
-            <div className="overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <DataTableHeader
-                  columns={columns}
-                  sortConfig={sortConfig}
-                  onSort={handleSort}
-                  selectable={selectable}
-                  onSelectAll={handleSelectAll}
-                  allSelected={
-                    selectedRows.size === processedData.length &&
-                    processedData.length > 0
-                  }
-                />
-                <DataTableBody
-                  data={processedData}
-                  columns={columns}
-                  loading={loading}
-                  emptyMessage={emptyMessage}
-                  onRowClick={onRowClick}
-                  actions={actions}
-                  selectable={selectable}
-                  selectedRows={selectedRows}
-                  onSelectRow={handleSelectRow}
-                />
-              </table>
-            </div>
-          </div>
+        <div className="mb-3">
+          <DataTableFilters
+            columns={filterableColumns}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
         </div>
       )}
 
-      {/* Pagination */}
-      {pagination && <DataTablePagination {...pagination} />}
+      <div className="bg-white rounded-lg shadow">
+        {/* Vue Mobile (Cards) */}
+        {isMobile ? (
+          <DataTableMobile
+            data={processedData}
+            columns={columns}
+            loading={loading}
+            emptyMessage={emptyMessage}
+            actions={tableActions}
+            selectable={selectable}
+            selectedRows={selectedRows}
+            onSelectRow={handleSelectRow}
+          />
+        ) : (
+          /* Vue Desktop (Table) - Scrollable horizontalement sur petits écrans */
+          <div className="overflow-x-auto overflow-y-visible -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-visible">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <DataTableHeader
+                    columns={columns}
+                    sortConfig={sortConfig}
+                    onSort={handleSort}
+                    selectable={selectable}
+                    onSelectAll={handleSelectAll}
+                    allSelected={
+                      selectedRows.size === processedData.length &&
+                      processedData.length > 0
+                    }
+                    hasActions={Boolean(
+                      tableActions && tableActions.length > 0
+                    )}
+                    actionsLabel="Actions"
+                  />
+                  <DataTableBody
+                    data={processedData}
+                    columns={columns}
+                    loading={loading}
+                    emptyMessage={emptyMessage}
+                    actions={tableActions}
+                    selectable={selectable}
+                    selectedRows={selectedRows}
+                    onSelectRow={handleSelectRow}
+                  />
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination && <DataTablePagination {...pagination} />}
+      </div>
     </div>
   );
 }

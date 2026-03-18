@@ -2,17 +2,17 @@ import React from 'react';
 import { Column } from './types';
 import { Search, X } from 'lucide-react';
 
-interface DataTableFiltersProps {
-  columns: Column[];
+interface DataTableFiltersProps<T extends object> {
+  columns: Column<T>[];
   filters: Record<string, unknown>;
   onFilterChange: (filters: Record<string, unknown>) => void;
 }
 
-export const DataTableFilters: React.FC<DataTableFiltersProps> = ({
+export function DataTableFilters<T extends object>({
   columns,
   filters,
   onFilterChange,
-}) => {
+}: DataTableFiltersProps<T>) {
   const handleFilterChange = (key: string, value: string) => {
     onFilterChange({ ...filters, [key]: value });
   };
@@ -24,7 +24,7 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({
   const hasActiveFilters = Object.values(filters).some(value => value);
 
   return (
-    <div className="p-4 border-b border-gray-200 bg-gray-50">
+    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {columns.map(column => (
           <div key={column.key}>
@@ -56,4 +56,4 @@ export const DataTableFilters: React.FC<DataTableFiltersProps> = ({
       )}
     </div>
   );
-};
+}

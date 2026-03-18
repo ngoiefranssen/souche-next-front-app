@@ -16,9 +16,9 @@ export function withAuthMiddleware(
 
     // Routes publiques (avec préfixes de locale)
     const publicRoutes = [
-      ENDPOINTS.AUTH.LOGIN,
-      ENDPOINTS.AUTH.FORGOT_PASSWORD,
-      ENDPOINTS.AUTH.RESET_PASSWORD,
+      ENDPOINTS?.AUTH?.LOGIN,
+      ENDPOINTS?.AUTH?.FORGOT_PASSWORD,
+      ENDPOINTS?.AUTH?.RESET_PASSWORD,
     ];
 
     // Construire les patterns avec locales

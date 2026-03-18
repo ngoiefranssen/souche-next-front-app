@@ -206,6 +206,26 @@ export async function getByRoleId(
 }
 
 /**
+ * Get direct permissions for a specific user
+ */
+export async function getByUserId(
+  userId: number
+): Promise<ApiResponse<Permission[]>> {
+  const response = await apiClient.get<{
+    success: boolean;
+    data: {
+      user: string;
+      permissions: BackendPermission[];
+    };
+  }>(`/permissions/user/${userId}`);
+
+  return {
+    status: 'success',
+    data: response.data.permissions.map(toPermission),
+  };
+}
+
+/**
  * Assign a permission to a role
  */
 export async function assign(data: {
@@ -228,6 +248,30 @@ export async function assign(data: {
 }
 
 /**
+ * Assign a permission directly to a user
+ */
+export async function assignToUser(data: {
+  userId: number;
+  permissionId: number;
+}): Promise<
+  ApiResponse<{ userId: number; permissionId: number; assignedAt: string }>
+> {
+  await apiClient.post<{ success: boolean; message: string }>(
+    '/permissions/assign-user',
+    data
+  );
+
+  return {
+    status: 'success',
+    data: {
+      userId: data.userId,
+      permissionId: data.permissionId,
+      assignedAt: new Date().toISOString(),
+    },
+  };
+}
+
+/**
  * Revoke a permission from a role
  */
 export async function revoke(data: {
@@ -242,6 +286,21 @@ export async function revoke(data: {
   return { status: 'success' };
 }
 
+/**
+ * Revoke a direct permission from a user
+ */
+export async function revokeFromUser(data: {
+  userId: number;
+  permissionId: number;
+}): Promise<ApiResponse<void>> {
+  await apiClient.post<{ success: boolean; message: string }>(
+    '/permissions/revoke-user',
+    data
+  );
+
+  return { status: 'success' };
+}
+
 export const permissionsAPI = {
   getAll,
   getByCategory,
@@ -250,6 +309,9 @@ export const permissionsAPI = {
   update,
   delete: deletePermission,
   getByRoleId,
+  getByUserId,
   assign,
+  assignToUser,
   revoke,
+  revokeFromUser,
 };

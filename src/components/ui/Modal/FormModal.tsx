@@ -6,7 +6,7 @@ import { Modal } from './Modal';
 export interface FormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: unknown) => void | Promise<void>;
+  onSubmit?: (data: unknown) => void | Promise<void>;
   title: string;
   children: React.ReactNode;
   submitText?: string;
@@ -24,8 +24,11 @@ export const FormModal: React.FC<FormModalProps> = ({
   cancelText = 'Annuler',
   loading = false,
 }) => {
+  const hasManagedSubmit = typeof onSubmit === 'function';
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!onSubmit) return;
 
     try {
       // The form data handling is done by the parent component
@@ -37,6 +40,23 @@ export const FormModal: React.FC<FormModalProps> = ({
     }
   };
 
+  if (!hasManagedSubmit) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={title}
+        size="md"
+        closeOnOverlayClick={!loading}
+        headerClassName="bg-[#356ca5] border-[#356ca5]"
+        titleClassName="text-white"
+        closeButtonClassName="text-white/80 hover:text-white focus:ring-white/70"
+      >
+        {children}
+      </Modal>
+    );
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -44,6 +64,9 @@ export const FormModal: React.FC<FormModalProps> = ({
       title={title}
       size="md"
       closeOnOverlayClick={!loading}
+      headerClassName="bg-[#356ca5] border-[#356ca5]"
+      titleClassName="text-white"
+      closeButtonClassName="text-white/80 hover:text-white focus:ring-white/70"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Form Fields */}
@@ -55,14 +78,14 @@ export const FormModal: React.FC<FormModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#356ca5] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelText}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-white bg-[#2B6A8E] rounded-lg hover:bg-[#255D7E] focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-white bg-[#356ca5] rounded-lg hover:bg-[#2f5f91] focus:outline-none focus:ring-2 focus:ring-[#356ca5] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center">

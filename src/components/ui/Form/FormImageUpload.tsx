@@ -236,7 +236,7 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
           <button
             type="button"
             onClick={handleClick}
-            className="w-full p-8 flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] rounded-lg"
+            className="w-full p-8 flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#356ca5] rounded-lg"
           >
             <Upload className="w-8 h-8" />
             <p className="text-sm font-medium">

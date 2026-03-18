@@ -16,6 +16,14 @@ jest.mock('../client', () => ({
   },
 }));
 
+const assertDefined = <T>(value: T | undefined): T => {
+  expect(value).toBeDefined();
+  if (value === undefined) {
+    throw new Error('Expected value to be defined');
+  }
+  return value;
+};
+
 describe('Permissions API Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -99,19 +107,18 @@ describe('Permissions API Service', () => {
       expect(apiClient.get).toHaveBeenCalledWith('/permissions?action=delete');
     });
 
-    it('should call GET /permissions with sort params', async () => {
+    it('should call GET /permissions with category filter', async () => {
       (apiClient.get as jest.Mock).mockResolvedValue({
         status: 'success',
         data: { items: [], pagination: {} },
       });
 
       await permissionsAPI.getAll({
-        sortBy: 'resource',
-        sortOrder: 'asc',
+        category: 'user-management',
       });
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/permissions?sortBy=resource&sortOrder=asc'
+        '/permissions?category=user-management'
       );
     });
 
@@ -127,12 +134,11 @@ describe('Permissions API Service', () => {
         search: 'create',
         resource: 'users',
         action: 'create',
-        sortBy: 'name',
-        sortOrder: 'desc',
+        category: 'user-management',
       });
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/permissions?page=2&limit=20&search=create&resource=users&action=create&sortBy=name&sortOrder=desc'
+        '/permissions?search=create&resource=users&action=create&category=user-management'
       );
     });
 
@@ -634,43 +640,33 @@ describe('Permissions API Service', () => {
 
       const result = await permissionsAPI.getById(1);
 
-      expect(result.data.conditions).toEqual({ ownerId: '${user.id}' });
+      const data = assertDefined(result.data);
+      expect(data.conditions).toEqual({ ownerId: '${user.id}' });
     });
 
     it('should correctly parse paginated response grouped by resource', async () => {
       const mockResponse = {
-        status: 'success',
-        data: {
-          items: [
-            { id: 1, name: 'users:read', resource: 'users', action: 'read' },
-            {
-              id: 2,
-              name: 'users:create',
-              resource: 'users',
-              action: 'create',
-            },
-            { id: 3, name: 'roles:read', resource: 'roles', action: 'read' },
-          ],
-          pagination: {
-            page: 1,
-            limit: 10,
-            total: 3,
-            totalPages: 1,
+        success: true,
+        count: 3,
+        data: [
+          { id: 1, name: 'users:read', resource: 'users', action: 'read' },
+          {
+            id: 2,
+            name: 'users:create',
+            resource: 'users',
+            action: 'create',
           },
-        },
+          { id: 3, name: 'roles:read', resource: 'roles', action: 'read' },
+        ],
       };
 
       (apiClient.get as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await permissionsAPI.getAll();
 
-      expect(result.data.items).toHaveLength(3);
-      expect(
-        result.data.items.filter(p => p.resource === 'users')
-      ).toHaveLength(2);
-      expect(
-        result.data.items.filter(p => p.resource === 'roles')
-      ).toHaveLength(1);
+      expect(result.data).toHaveLength(3);
+      expect(result.data.filter(p => p.resource === 'users')).toHaveLength(2);
+      expect(result.data.filter(p => p.resource === 'roles')).toHaveLength(1);
     });
   });
 });

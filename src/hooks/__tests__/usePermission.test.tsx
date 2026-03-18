@@ -2,12 +2,17 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { usePermission } from '../usePermission';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { apiClient } from '@/lib/api/client';
+import { getAuthToken } from '@/utils/auth/tokenManager';
 
 // Mock the API client
 jest.mock('@/lib/api/client', () => ({
   apiClient: {
     get: jest.fn(),
   },
+}));
+
+jest.mock('@/utils/auth/tokenManager', () => ({
+  getAuthToken: jest.fn(),
 }));
 
 // Mock localStorage
@@ -36,6 +41,7 @@ describe('usePermission', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.clear();
+    (getAuthToken as jest.Mock).mockReturnValue('test-token');
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -349,7 +355,7 @@ describe('usePermission', () => {
       expect(result.current.permissions).toEqual(mockPermissions);
     });
 
-    it('should be case-sensitive for permission checks', async () => {
+    it('should normalize case for permission checks', async () => {
       const mockPermissions = ['users:read'];
       (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockPermissions,
@@ -363,8 +369,43 @@ describe('usePermission', () => {
       });
 
       expect(result.current.hasPermission('users:read')).toBe(true);
-      expect(result.current.hasPermission('Users:Read')).toBe(false);
-      expect(result.current.hasPermission('USERS:READ')).toBe(false);
+      expect(result.current.hasPermission('Users:Read')).toBe(true);
+      expect(result.current.hasPermission('USERS:READ')).toBe(true);
+    });
+
+    it('should normalize backend resource aliases', async () => {
+      const mockPermissions = ['profils:update', 'employment-statut:delete'];
+      (apiClient.get as jest.Mock).mockResolvedValue({
+        data: mockPermissions,
+      });
+
+      const { result } = renderHook(() => usePermission(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.hasPermission('profiles:update')).toBe(true);
+      expect(result.current.hasPermission('employment-status:delete')).toBe(
+        true
+      );
+    });
+
+    it('should grant all permissions to super admin markers', async () => {
+      const mockPermissions = ['super-admin'];
+      (apiClient.get as jest.Mock).mockResolvedValue({
+        data: mockPermissions,
+      });
+
+      const { result } = renderHook(() => usePermission(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.hasPermission('users:update')).toBe(true);
+      expect(result.current.hasPermission('profiles:delete')).toBe(true);
+      expect(result.current.hasPermission('permissions:create')).toBe(true);
     });
   });
 });

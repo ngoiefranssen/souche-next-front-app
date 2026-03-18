@@ -82,20 +82,17 @@ describe('Users API Service', () => {
       );
     });
 
-    it('should call GET /users with sort params', async () => {
+    it('should call GET /users with employment status filter', async () => {
       (apiClient.get as jest.Mock).mockResolvedValue({
         status: 'success',
         data: { items: [], pagination: {} },
       });
 
       await usersAPI.getAll({
-        sortBy: 'email',
-        sortOrder: 'desc',
+        employmentStatusId: 2,
       });
 
-      expect(apiClient.get).toHaveBeenCalledWith(
-        '/users?sortBy=email&sortOrder=desc'
-      );
+      expect(apiClient.get).toHaveBeenCalledWith('/users?employmentStatusId=2');
     });
 
     it('should call GET /users with all params combined', async () => {
@@ -110,12 +107,10 @@ describe('Users API Service', () => {
         search: 'test',
         profileId: 1,
         employmentStatusId: 2,
-        sortBy: 'username',
-        sortOrder: 'asc',
       });
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/users?page=3&limit=50&search=test&profileId=1&employmentStatusId=2&sortBy=username&sortOrder=asc'
+        '/users?page=3&limit=50&search=test&profileId=1&employmentStatusId=2'
       );
     });
 

@@ -39,8 +39,7 @@ export default function AuditPage() {
   const loadAuditData = useCallback(async () => {
     try {
       setLoading(true);
-
-      const [logsResponse, statsResponse] = await Promise.all([
+      const [logsResult, statsResult] = await Promise.allSettled([
         auditAPI.getAll({
           page,
           limit,
@@ -50,15 +49,34 @@ export default function AuditPage() {
         auditAPI.getStats(),
       ]);
 
-      setLogs(logsResponse.data);
-      setTotal(logsResponse.pagination.total);
-      setStats(statsResponse.data || null);
+      if (logsResult.status === 'fulfilled') {
+        setLogs(logsResult.value.data);
+        setTotal(logsResult.value.pagination.total);
+      } else {
+        setLogs([]);
+        setTotal(0);
+        showToast({
+          message: "Erreur lors du chargement des logs d'audit",
+          variant: 'error',
+        });
+        console.error('Error loading audit logs:', logsResult.reason);
+      }
+
+      if (statsResult.status === 'fulfilled') {
+        setStats(statsResult.value.data || null);
+      } else {
+        setStats(null);
+        console.error('Error loading audit stats:', statsResult.reason);
+      }
     } catch (error) {
+      setLogs([]);
+      setTotal(0);
+      setStats(null);
       showToast({
         message: "Erreur lors du chargement des données d'audit",
         variant: 'error',
       });
-      console.error('Error loading audit data:', error);
+      console.error('Unexpected error while loading audit data:', error);
     } finally {
       setLoading(false);
     }
@@ -74,38 +92,52 @@ export default function AuditPage() {
       label: 'Action',
       sortable: false,
       filterable: true,
+      render: value => (
+        <span className="text-gray-900">{String(value || '-')}</span>
+      ),
     },
     {
       key: 'resource',
       label: 'Ressource',
       sortable: false,
       filterable: false,
-      render: value => <span>{String(value || '-')}</span>,
+      render: value => (
+        <span className="text-gray-900">{String(value || '-')}</span>
+      ),
     },
     {
       key: 'severity',
       label: 'Gravité',
       sortable: false,
       filterable: true,
-      render: value => <span>{severityLabel(String(value || ''))}</span>,
+      render: value => (
+        <span className="text-gray-900">
+          {severityLabel(String(value || 'info'))}
+        </span>
+      ),
     },
     {
       key: 'email',
       label: 'Utilisateur',
       sortable: false,
       filterable: false,
-      render: value => <span>{String(value || '-')}</span>,
+      render: (_value, row) => (
+        <span className="text-gray-900">
+          {row.email || row.user?.email || row.user?.username || '-'}
+        </span>
+      ),
     },
     {
       key: 'created_at',
       label: 'Date',
       sortable: false,
       filterable: false,
-      render: value => {
-        if (!value) return <span>-</span>;
-        const date = new Date(String(value));
+      render: (value, row) => {
+        const dateValue = value || row.timestamp;
+        if (!dateValue) return <span>-</span>;
+        const date = new Date(String(dateValue));
         return (
-          <span>
+          <span className="text-gray-900">
             {date.toLocaleDateString()} {date.toLocaleTimeString()}
           </span>
         );

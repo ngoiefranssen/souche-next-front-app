@@ -13,7 +13,7 @@ interface DataTableMobileProps<T> {
   onSelectRow: (index: number, checked: boolean) => void;
 }
 
-export function DataTableMobile<T extends Record<string, unknown>>({
+export function DataTableMobile<T extends object>({
   data,
   columns,
   loading,
@@ -24,6 +24,9 @@ export function DataTableMobile<T extends Record<string, unknown>>({
   selectedRows,
   onSelectRow,
 }: DataTableMobileProps<T>) {
+  const getColumnValue = (row: T, key: string): unknown =>
+    (row as Record<string, unknown>)[key];
+
   if (loading) {
     return (
       <div className="p-6 text-center">
@@ -79,8 +82,12 @@ export function DataTableMobile<T extends Record<string, unknown>>({
                 </span>
                 <span className="text-sm text-gray-900 w-2/3 text-right">
                   {column.render
-                    ? column.render(row[column.key], row, rowIndex)
-                    : String(row[column.key] ?? '')}
+                    ? column.render(
+                        getColumnValue(row, column.key),
+                        row,
+                        rowIndex
+                      )
+                    : String(getColumnValue(row, column.key) ?? '')}
                 </span>
               </div>
             ))}
@@ -89,7 +96,11 @@ export function DataTableMobile<T extends Record<string, unknown>>({
           {/* Actions */}
           {actions && actions.length > 0 && (
             <div className="mt-3 pt-3 border-t border-gray-200">
-              <DataTableActions row={row} actions={actions} />
+              <DataTableActions
+                row={row}
+                rowIndex={rowIndex}
+                actions={actions}
+              />
             </div>
           )}
         </div>

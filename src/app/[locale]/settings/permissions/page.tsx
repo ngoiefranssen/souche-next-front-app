@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import {
   PermissionTable,
   PermissionForm,
@@ -13,9 +15,11 @@ import { Can } from '@/components/auth/Can';
 import { useToast } from '@/hooks/useToast';
 import { permissionsAPI } from '@/lib/api/permissions';
 import type { Permission, PermissionInput } from '@/types/permission';
-import { Plus } from 'lucide-react';
+import { KeyRound, Plus, UserRound } from 'lucide-react';
 
 export default function PermissionsPage() {
+  const router = useRouter();
+  const locale = useLocale();
   const { showToast } = useToast();
 
   const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -181,21 +185,49 @@ export default function PermissionsPage() {
             </p>
           </div>
 
-          <Can permission="permissions:create">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
-              variant="primary"
-              icon={<Plus className="w-5 h-5" />}
+              variant="secondary"
+              icon={<KeyRound className="w-5 h-5" />}
               iconPosition="left"
-              onClick={() => {
-                setFormError('');
-                setIsCreateModalOpen(true);
-              }}
+              onClick={() =>
+                router.push(`/${locale}/settings/roles/permissions`)
+              }
               fullWidth
               className="sm:w-auto"
             >
-              Créer une permission
+              Affecter aux rôles
             </Button>
-          </Can>
+
+            <Can permission="users:read">
+              <Button
+                variant="secondary"
+                icon={<UserRound className="w-5 h-5" />}
+                iconPosition="left"
+                onClick={() => router.push(`/${locale}/settings/users`)}
+                fullWidth
+                className="sm:w-auto"
+              >
+                Affecter aux utilisateurs
+              </Button>
+            </Can>
+
+            <Can permission="permissions:create">
+              <Button
+                variant="primary"
+                icon={<Plus className="w-5 h-5" />}
+                iconPosition="left"
+                onClick={() => {
+                  setFormError('');
+                  setIsCreateModalOpen(true);
+                }}
+                fullWidth
+                className="sm:w-auto"
+              >
+                Créer une permission
+              </Button>
+            </Can>
+          </div>
         </div>
 
         <PermissionTable

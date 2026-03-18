@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { RoleTable } from '@/components/features/roles/RoleTable';
 import { RoleForm } from '@/components/features/roles/RoleForm';
 import { FormModal } from '@/components/ui/Modal/FormModal';
@@ -29,6 +31,8 @@ import { Plus } from 'lucide-react';
  * - roles:delete pour supprimer
  */
 export default function RolesPage() {
+  const router = useRouter();
+  const locale = useLocale();
   const { showToast } = useToast();
 
   // État
@@ -186,6 +190,11 @@ export default function RolesPage() {
     setIsDeleteModalOpen(true);
   };
 
+  // Ouvrir l'écran d'affectation des permissions
+  const openPermissionsPage = (role: Role) => {
+    router.push(`/${locale}/settings/roles/${role.id}/permissions`);
+  };
+
   // Gestion du tri
   const handleSort = (key: string, direction: 'asc' | 'desc') => {
     setSortBy(key);
@@ -243,6 +252,7 @@ export default function RolesPage() {
           }}
           onEdit={openEditModal}
           onDelete={openDeleteModal}
+          onManagePermissions={openPermissionsPage}
           onSort={handleSort}
           onFilter={handleFilter}
         />

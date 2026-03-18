@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Column, ActionButton } from '@/components/ui/DataTable/types';
 import { DataTableActions } from '@/components/ui/DataTable/DataTableActions';
 
@@ -13,7 +14,7 @@ interface DataTableBodyProps<T> {
   onSelectRow: (index: number, checked: boolean) => void;
 }
 
-export function DataTableBody<T extends Record<string, unknown>>({
+export function DataTableBody<T extends object>({
   data,
   columns,
   loading,
@@ -24,6 +25,9 @@ export function DataTableBody<T extends Record<string, unknown>>({
   selectedRows,
   onSelectRow,
 }: DataTableBodyProps<T>) {
+  const getColumnValue = (row: T, key: string): unknown =>
+    (row as Record<string, unknown>)[key];
+
   if (loading) {
     return (
       <tbody>
@@ -92,7 +96,7 @@ export function DataTableBody<T extends Record<string, unknown>>({
           {columns.map(column => (
             <td
               key={column.key}
-              className={`px-6 py-4 whitespace-nowrap text-sm ${
+              className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${
                 column.align === 'center'
                   ? 'text-center'
                   : column.align === 'right'
@@ -101,13 +105,17 @@ export function DataTableBody<T extends Record<string, unknown>>({
               } ${column.className || ''}`}
             >
               {column.render
-                ? column.render(row[column.key], row, rowIndex)
-                : row[column.key]}
+                ? column.render(getColumnValue(row, column.key), row, rowIndex)
+                : (getColumnValue(row, column.key) as ReactNode)}
             </td>
           ))}
           {actions && actions.length > 0 && (
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <DataTableActions row={row} actions={actions} />
+              <DataTableActions
+                row={row}
+                rowIndex={rowIndex}
+                actions={actions}
+              />
             </td>
           )}
         </tr>

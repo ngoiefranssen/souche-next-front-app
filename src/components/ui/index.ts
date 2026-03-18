@@ -2,6 +2,23 @@
 export { Modal, ConfirmModal, FormModal } from './Modal';
 export type { ModalProps, ConfirmModalProps, FormModalProps } from './Modal';
 
+// Headless wrappers
+export {
+  AppMenu,
+  AppMenuButton,
+  AppMenuItems,
+  AppMenuItem,
+  AppDialog,
+  AppDialogTitle,
+  AppListbox,
+} from './Headless';
+export type {
+  AppMenuItemRenderProps,
+  AppDialogProps,
+  AppListboxProps,
+  AppListboxOption,
+} from './Headless';
+
 // Button component
 export { Button } from './Button';
 export type { ButtonProps } from './Button';

@@ -16,6 +16,14 @@ jest.mock('../client', () => ({
   },
 }));
 
+const assertDefined = <T>(value: T | undefined): T => {
+  expect(value).toBeDefined();
+  if (value === undefined) {
+    throw new Error('Expected value to be defined');
+  }
+  return value;
+};
+
 describe('Profiles API Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -376,23 +384,32 @@ describe('Profiles API Service', () => {
 
       const result = await profilesAPI.getById(1);
 
-      expect(result.data._count).toHaveProperty('users', 15);
+      const data = assertDefined(result.data);
+      expect(data._count).toHaveProperty('users', 15);
     });
 
     it('should correctly parse paginated response', async () => {
       const mockResponse = {
         status: 'success',
-        data: {
-          items: [
-            { id: 1, label: 'Developer', _count: { users: 10 } },
-            { id: 2, label: 'Designer', _count: { users: 5 } },
-          ],
-          pagination: {
-            page: 1,
-            limit: 10,
-            total: 2,
-            totalPages: 1,
+        data: [
+          {
+            id: 1,
+            label: 'Developer',
+            description: 'Developer',
+            _count: { users: 10 },
           },
+          {
+            id: 2,
+            label: 'Designer',
+            description: 'Designer',
+            _count: { users: 5 },
+          },
+        ],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 2,
+          totalPages: 1,
         },
       };
 
@@ -400,9 +417,9 @@ describe('Profiles API Service', () => {
 
       const result = await profilesAPI.getAll();
 
-      expect(result.data.items).toHaveLength(2);
-      expect(result.data.items[0]._count.users).toBe(10);
-      expect(result.data.items[1]._count.users).toBe(5);
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0]._count?.users).toBe(10);
+      expect(result.data[1]._count?.users).toBe(5);
     });
   });
 });

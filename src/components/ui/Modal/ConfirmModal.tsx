@@ -14,6 +14,7 @@ export interface ConfirmModalProps {
   cancelText?: string;
   variant?: 'danger' | 'warning' | 'info';
   loading?: boolean;
+  isLoading?: boolean;
 }
 
 const variantConfig = {
@@ -30,7 +31,7 @@ const variantConfig = {
   info: {
     icon: Info,
     iconColor: 'text-blue-600',
-    buttonColor: 'bg-[#2B6A8E] hover:bg-[#255D7E] focus:ring-[#2B6A8E]',
+    buttonColor: 'bg-[#356ca5] hover:bg-[#2f5f91] focus:ring-[#356ca5]',
   },
 };
 
@@ -44,9 +45,11 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   cancelText = 'Annuler',
   variant = 'info',
   loading = false,
+  isLoading,
 }) => {
   const config = variantConfig[variant];
   const Icon = config.icon;
+  const pending = isLoading ?? loading;
 
   const handleConfirm = async () => {
     try {
@@ -64,7 +67,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       onClose={onClose}
       title={title}
       size="sm"
-      closeOnOverlayClick={!loading}
+      closeOnOverlayClick={!pending}
     >
       <div className="space-y-4">
         {/* Icon and Message */}
@@ -79,14 +82,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <div className="flex items-center justify-end space-x-3 pt-4">
           <button
             onClick={onClose}
-            disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={pending}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#356ca5] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
-            disabled={loading}
+            disabled={pending}
             className={`
               px-4 py-2 text-sm font-medium text-white rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-offset-2 
@@ -94,7 +97,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               ${config.buttonColor}
             `}
           >
-            {loading ? (
+            {pending ? (
               <span className="flex items-center">
                 <svg
                   className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"

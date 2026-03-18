@@ -34,16 +34,16 @@ describe('Modal', () => {
 
     it('should render with correct size classes', () => {
       const { rerender } = render(<Modal {...defaultProps} size="sm" />);
-      let dialog = screen.getByRole('dialog').firstChild as HTMLElement;
-      expect(dialog).toHaveClass('max-w-md');
+      let panel = screen.getByTestId('app-dialog-panel');
+      expect(panel).toHaveClass('max-w-md');
 
       rerender(<Modal {...defaultProps} size="lg" />);
-      dialog = screen.getByRole('dialog').firstChild as HTMLElement;
-      expect(dialog).toHaveClass('max-w-2xl');
+      panel = screen.getByTestId('app-dialog-panel');
+      expect(panel).toHaveClass('max-w-2xl');
 
       rerender(<Modal {...defaultProps} size="xl" />);
-      dialog = screen.getByRole('dialog').firstChild as HTMLElement;
-      expect(dialog).toHaveClass('max-w-4xl');
+      panel = screen.getByTestId('app-dialog-panel');
+      expect(panel).toHaveClass('max-w-4xl');
     });
 
     it('should show close button by default', () => {
@@ -88,7 +88,7 @@ describe('Modal', () => {
         <Modal {...defaultProps} onClose={onClose} closeOnOverlayClick={true} />
       );
 
-      const overlay = screen.getByRole('dialog');
+      const overlay = screen.getByTestId('app-dialog-overlay');
       fireEvent.click(overlay);
       expect(onClose).toHaveBeenCalledTimes(1);
     });
@@ -103,7 +103,7 @@ describe('Modal', () => {
         />
       );
 
-      const overlay = screen.getByRole('dialog');
+      const overlay = screen.getByTestId('app-dialog-overlay');
       fireEvent.click(overlay);
       expect(onClose).not.toHaveBeenCalled();
     });

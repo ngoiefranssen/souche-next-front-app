@@ -2,36 +2,40 @@ import React from 'react';
 import { Column, SortConfig } from './types';
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 
-interface DataTableHeaderProps {
-  columns: Column[];
+interface DataTableHeaderProps<T extends object> {
+  columns: Column<T>[];
   sortConfig: SortConfig;
   onSort: (key: string) => void;
   selectable: boolean;
   onSelectAll: (checked: boolean) => void;
   allSelected: boolean;
+  hasActions?: boolean;
+  actionsLabel?: string;
 }
 
-export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
+export function DataTableHeader<T extends object>({
   columns,
   sortConfig,
   onSort,
   selectable,
   onSelectAll,
   allSelected,
-}) => {
+  hasActions = false,
+  actionsLabel = 'Actions',
+}: DataTableHeaderProps<T>) {
   const getSortIcon = (columnKey: string) => {
     if (sortConfig.key !== columnKey) {
-      return <ChevronsUpDown className="w-4 h-4 text-gray-400" />;
+      return <ChevronsUpDown className="w-4 h-4 text-white" />;
     }
     return sortConfig.direction === 'asc' ? (
-      <ChevronUp className="w-4 h-4 text-blue-600" />
+      <ChevronUp className="w-4 h-4 text-white" />
     ) : (
-      <ChevronDown className="w-4 h-4 text-blue-600" />
+      <ChevronDown className="w-4 h-4 text-white" />
     );
   };
 
   return (
-    <thead className="bg-gray-50">
+    <thead className="bg-[#356ca5]">
       <tr>
         {selectable && (
           <th className="px-6 py-3 w-12">
@@ -45,7 +49,7 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
                   onSelectAll(!allSelected);
                 }
               }}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-[#2B6A8E]"
+              className="w-4 h-4 text-[#356ca5] bg-white border-white/80 rounded focus:ring-2 focus:ring-white/70"
               aria-label="Sélectionner toutes les lignes"
             />
           </th>
@@ -54,7 +58,7 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
           <th
             key={column.key}
             style={{ width: column.width }}
-            className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+            className={`px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider ${
               column.align === 'center'
                 ? 'text-center'
                 : column.align === 'right'
@@ -71,7 +75,7 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
                     onSort(column.key);
                   }
                 }}
-                className="flex items-center space-x-1 hover:text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-[#2B6A8E] rounded px-1"
+                className="inline-flex items-center gap-1 text-white transition focus:outline-none rounded px-1"
                 aria-label={`Trier par ${column.label}`}
               >
                 <span>{column.label}</span>
@@ -82,7 +86,12 @@ export const DataTableHeader: React.FC<DataTableHeaderProps> = ({
             )}
           </th>
         ))}
+        {hasActions && (
+          <th className="px-6 py-3 text-right text-xs font-semibold text-white uppercase tracking-wider">
+            {actionsLabel}
+          </th>
+        )}
       </tr>
     </thead>
   );
-};
+}

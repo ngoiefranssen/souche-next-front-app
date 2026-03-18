@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/DataTable/types';
 import { UserListItem } from '@/types/user';
 import { Badge } from '@/components/ui/Badge/Badge';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, KeyRound, Trash2 } from 'lucide-react';
 import { usePermission } from '@/hooks/usePermission';
 
 interface UserTableProps {
@@ -18,6 +18,7 @@ interface UserTableProps {
   pagination?: PaginationConfig;
   onEdit?: (user: UserListItem) => void;
   onDelete?: (user: UserListItem) => void;
+  onManagePermissions?: (user: UserListItem) => void;
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
   onFilter?: (filters: Record<string, unknown>) => void;
 }
@@ -28,6 +29,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   pagination,
   onEdit,
   onDelete,
+  onManagePermissions,
   onSort,
   onFilter,
 }) => {
@@ -90,6 +92,15 @@ export const UserTable: React.FC<UserTableProps> = ({
       label: 'Modifier',
       icon: <Edit className="w-4 h-4" />,
       onClick: onEdit,
+      variant: 'secondary',
+    });
+  }
+
+  if (onManagePermissions && hasPermission('permissions:manage')) {
+    actions.push({
+      label: 'Permissions',
+      icon: <KeyRound className="w-4 h-4" />,
+      onClick: onManagePermissions,
       variant: 'secondary',
     });
   }

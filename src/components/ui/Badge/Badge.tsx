@@ -4,7 +4,7 @@ import React from 'react';
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+  variant?: 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   dot?: boolean;
   className?: string;
@@ -16,6 +16,7 @@ const variantClasses = {
   danger: 'bg-red-100 text-red-800 border-red-200',
   info: 'bg-blue-100 text-blue-800 border-blue-200',
   neutral: 'bg-gray-100 text-gray-800 border-gray-200',
+  secondary: 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
 const dotColors = {
@@ -24,6 +25,7 @@ const dotColors = {
   danger: 'bg-red-500',
   info: 'bg-blue-500',
   neutral: 'bg-gray-500',
+  secondary: 'bg-gray-500',
 };
 
 const sizeClasses = {

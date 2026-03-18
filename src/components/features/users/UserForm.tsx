@@ -19,16 +19,7 @@ import { profilesAPI } from '@/lib/api/settings/profiles';
 import { employmentStatusAPI } from '@/lib/api/settings/employment-status';
 import type { Profile } from '@/types/profile';
 import type { EmploymentStatus } from '@/types/employment-status';
-import {
-  Mail,
-  User,
-  Lock,
-  Phone,
-  DollarSign,
-  Calendar,
-  Briefcase,
-  UserCircle,
-} from 'lucide-react';
+import { Mail, User, Lock, Phone, DollarSign, UserCircle } from 'lucide-react';
 
 interface UserFormProps {
   /**
@@ -84,8 +75,27 @@ export const UserForm: React.FC<UserFormProps> = ({
   isSubmitting = false,
   error,
 }) => {
+  type UserFormInput = UserCreateInput & {
+    profilePhoto?: File | null;
+  };
+
   const isEditMode = !!initialData?.id;
   const schema = isEditMode ? userUpdateSchema : userCreateSchema;
+  const defaultValues: UserFormInput = {
+    email: initialData?.email ?? '',
+    username: initialData?.username ?? '',
+    password: '',
+    firstName: initialData?.firstName ?? '',
+    lastName: initialData?.lastName ?? '',
+    phone: initialData?.phone ?? '',
+    salary: initialData?.salary ?? 0,
+    hireDate: initialData?.hireDate
+      ? new Date(initialData.hireDate)
+      : new Date(),
+    employmentStatusId: initialData?.employmentStatusId ?? 0,
+    profileId: initialData?.profileId ?? 0,
+    profilePhoto: null,
+  };
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [employmentStatuses, setEmploymentStatuses] = useState<
@@ -102,20 +112,9 @@ export const UserForm: React.FC<UserFormProps> = ({
     handleSubmit,
     control,
     formState: { errors, isValid },
-  } = useForm<UserCreateInput | UserUpdateInput>({
+  } = useForm<UserFormInput>({
     resolver: zodResolver(schema),
-    defaultValues: initialData || {
-      email: '',
-      username: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      salary: 0,
-      hireDate: new Date(),
-      employmentStatusId: 0,
-      profileId: 0,
-    },
+    defaultValues,
     mode: 'onChange',
   });
 
@@ -141,8 +140,16 @@ export const UserForm: React.FC<UserFormProps> = ({
     loadOptions();
   }, []);
 
-  const handleFormSubmit = async (data: UserCreateInput | UserUpdateInput) => {
+  const handleFormSubmit = async (data: UserFormInput) => {
     try {
+      if (isEditMode) {
+        const { password, profilePhoto, ...updateData } = data;
+        void password;
+        void profilePhoto;
+        await onSubmit(updateData, photoFile || undefined);
+        return;
+      }
+
       await onSubmit(data, photoFile || undefined);
     } catch (err) {
       console.error('Form submission error:', err);
@@ -269,13 +276,12 @@ export const UserForm: React.FC<UserFormProps> = ({
                   label="Photo de profil"
                   accept="image/*"
                   maxSize={5}
-                  preview={photoPreview}
+                  preview={Boolean(photoPreview)}
                   onChange={file => {
                     field.onChange(file);
                     handlePhotoChange(file);
                   }}
                   error={errors.profilePhoto?.message}
-                  disabled={isSubmitting}
                 />
               )}
             />
@@ -299,7 +305,6 @@ export const UserForm: React.FC<UserFormProps> = ({
                 value={field.value?.toString() || ''}
                 onChange={e => field.onChange(parseInt(e.target.value, 10))}
                 error={errors.profileId?.message}
-                icon={<Briefcase className="w-4 h-4" />}
                 required
                 disabled={isSubmitting}
                 options={[
@@ -323,7 +328,6 @@ export const UserForm: React.FC<UserFormProps> = ({
                 value={field.value?.toString() || ''}
                 onChange={e => field.onChange(parseInt(e.target.value, 10))}
                 error={errors.employmentStatusId?.message}
-                icon={<Briefcase className="w-4 h-4" />}
                 required
                 disabled={isSubmitting}
                 options={[
@@ -356,13 +360,22 @@ export const UserForm: React.FC<UserFormProps> = ({
               <FormDatePicker
                 label="Date d'embauche"
                 {...field}
-                value={field.value}
-                onChange={field.onChange}
+                value={
+                  field.value instanceof Date
+                    ? field.value.toISOString().split('T')[0]
+                    : ''
+                }
+                onChange={e =>
+                  field.onChange(
+                    e.target.value
+                      ? new Date(`${e.target.value}T00:00:00`)
+                      : undefined
+                  )
+                }
                 error={errors.hireDate?.message}
-                icon={<Calendar className="w-4 h-4" />}
                 required
                 disabled={isSubmitting}
-                maxDate={new Date()}
+                max={new Date().toISOString().split('T')[0]}
               />
             )}
           />

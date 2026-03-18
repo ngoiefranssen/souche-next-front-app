@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export interface Column<T = Record<string, unknown>> {
+export interface Column<T = object> {
   key: string;
   label: string;
   sortable?: boolean;
@@ -11,7 +11,7 @@ export interface Column<T = Record<string, unknown>> {
   className?: string;
 }
 
-export interface DataTableProps<T = Record<string, unknown>> {
+export interface DataTableProps<T = object> {
   data: T[];
   columns: Column<T>[];
   loading?: boolean;
@@ -34,10 +34,10 @@ export interface PaginationConfig {
   onLimitChange: (limit: number) => void;
 }
 
-export interface ActionButton<T = Record<string, unknown>> {
+export interface ActionButton<T = object> {
   label: string;
   icon?: ReactNode;
-  onClick: (row: T) => void;
+  onClick: (row: T, rowIndex: number) => void;
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
   show?: (row: T) => boolean;
 }

@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
 } from 'react';
 import { apiClient } from '@/lib/api/client';
 import { logError } from '@/lib/utils/errorLogger';
@@ -30,39 +31,178 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 const CACHE_KEY = 'user-permissions';
 const CACHE_TIMESTAMP_KEY = 'user-permissions-timestamp';
 
+const RESOURCE_ALIASES: Record<string, string> = {
+  user: 'users',
+  users: 'users',
+  role: 'roles',
+  roles: 'roles',
+  profil: 'profiles',
+  profils: 'profiles',
+  profile: 'profiles',
+  profiles: 'profiles',
+  permission: 'permissions',
+  permissions: 'permissions',
+  'employment-status': 'employment-status',
+  'employment-statut': 'employment-status',
+  employment_status: 'employment-status',
+  employmentstatus: 'employment-status',
+  'audit-log': 'audit',
+  'audit-logs': 'audit',
+  audit: 'audit',
+  audits: 'audit',
+};
+
+const ACTION_ALIASES: Record<string, string> = {
+  read: 'read',
+  list: 'read',
+  view: 'read',
+  show: 'read',
+  get: 'read',
+  create: 'create',
+  add: 'create',
+  new: 'create',
+  post: 'create',
+  update: 'update',
+  edit: 'update',
+  modify: 'update',
+  patch: 'update',
+  put: 'update',
+  write: 'update',
+  delete: 'delete',
+  remove: 'delete',
+  destroy: 'delete',
+  manage: 'manage',
+  all: '*',
+  '*': '*',
+};
+
+const SUPER_ADMIN_TOKENS = new Set([
+  'super-admin',
+  'super_admin',
+  'superadmin',
+  'administrator',
+  'root',
+]);
+
+const SUPER_ADMIN_PERMISSIONS = new Set([
+  '*',
+  '*:*',
+  'system:*',
+  'all:*',
+  'admin:*',
+  'root:*',
+  'super-admin:*',
+  'super_admin:*',
+  'superadmin:*',
+]);
+
+const normalizeToken = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/_/g, '-')
+    .replace(/\/+/g, ':')
+    .replace(/\.{1,}/g, ':')
+    .replace(/-{2,}/g, '-');
+
+const normalizeResource = (resource: string): string => {
+  const normalized = normalizeToken(resource).replace(/:/g, '-');
+  return RESOURCE_ALIASES[normalized] || normalized;
+};
+
+const normalizeAction = (action: string): string => {
+  const normalized = normalizeToken(action).replace(/:/g, '-');
+  return ACTION_ALIASES[normalized] || normalized;
+};
+
+const normalizePermission = (permission: string): string => {
+  const raw = normalizeToken(permission);
+  if (!raw) return '';
+
+  if (SUPER_ADMIN_TOKENS.has(raw) || SUPER_ADMIN_PERMISSIONS.has(raw)) {
+    return raw;
+  }
+
+  const [resourcePart, actionPart] = raw.includes(':')
+    ? raw.split(':', 2)
+    : [raw, ''];
+
+  if (!actionPart) {
+    return normalizeResource(resourcePart);
+  }
+
+  return `${normalizeResource(resourcePart)}:${normalizeAction(actionPart)}`;
+};
+
+const parseNormalizedPermission = (
+  permission: string
+): { resource: string; action: string } => {
+  if (!permission.includes(':')) {
+    return { resource: permission, action: '' };
+  }
+
+  const [resource, action] = permission.split(':', 2);
+  return { resource, action };
+};
+
+const hasGlobalPermission = (permissionSet: Set<string>): boolean => {
+  for (const wildcard of SUPER_ADMIN_PERMISSIONS) {
+    if (permissionSet.has(wildcard)) {
+      return true;
+    }
+  }
+
+  for (const token of SUPER_ADMIN_TOKENS) {
+    if (permissionSet.has(token)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const normalizedPermissionSet = useMemo(
+    () =>
+      new Set(permissions.map(permission => normalizePermission(permission))),
+    [permissions]
+  );
+
   const hasPermissionMatch = useCallback(
     (requiredPermission: string): boolean => {
-      if (!requiredPermission) return false;
+      const normalizedRequired = normalizePermission(requiredPermission);
+      if (!normalizedRequired) {
+        return false;
+      }
 
-      // Exact permission
-      if (permissions.includes(requiredPermission)) {
+      // Super admin/global wildcard permissions
+      if (hasGlobalPermission(normalizedPermissionSet)) {
         return true;
       }
 
-      // Super admin/global wildcards
-      if (
-        permissions.includes('system:*') ||
-        permissions.includes('*') ||
-        permissions.includes('*:*')
-      ) {
+      // Exact permission after backend/frontend normalization
+      if (normalizedPermissionSet.has(normalizedRequired)) {
         return true;
       }
 
-      // Resource wildcard (e.g. "users:*" matches "users:read")
-      const [resource] = requiredPermission.split(':');
+      // Resource wildcard (e.g. "users:*" or "users:manage")
+      const { resource } = parseNormalizedPermission(normalizedRequired);
       if (!resource) {
         return false;
       }
 
-      return permissions.includes(`${resource}:*`);
+      return (
+        normalizedPermissionSet.has(`${resource}:*`) ||
+        normalizedPermissionSet.has(`${resource}:manage`)
+      );
     },
-    [permissions]
+    [normalizedPermissionSet]
   );
 
   const hasAuthToken = useCallback((): boolean => {
