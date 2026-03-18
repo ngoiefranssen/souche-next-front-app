@@ -178,16 +178,16 @@ export const UserForm: React.FC<UserFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {/* Erreur globale */}
       {error && <FormError message={error} />}
 
       {/* Section: Informations de connexion */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h3 className="mb-3 text-lg font-semibold text-gray-900">
           Informations de connexion
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             label="Email"
             {...register('email')}
@@ -228,11 +228,11 @@ export const UserForm: React.FC<UserFormProps> = ({
       </div>
 
       {/* Section: Informations personnelles */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h3 className="mb-3 text-lg font-semibold text-gray-900">
           Informations personnelles
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             label="Prénom"
             {...register('firstName')}
@@ -290,11 +290,11 @@ export const UserForm: React.FC<UserFormProps> = ({
       </div>
 
       {/* Section: Informations professionnelles */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h3 className="mb-3 text-lg font-semibold text-gray-900">
           Informations professionnelles
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Controller
             name="profileId"
             control={control}

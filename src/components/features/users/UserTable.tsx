@@ -124,7 +124,7 @@ export const UserTable: React.FC<UserTableProps> = ({
       onSort={onSort}
       onFilter={onFilter}
       emptyMessage="Aucun utilisateur trouvé"
-      className="mt-4"
+      className="mt-2"
     />
   );
 };

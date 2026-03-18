@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button/Button';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useToast } from '@/hooks/useToast';
 import { usersAPI } from '@/lib/api/users';
+import SettingsFormPageLayout from '@/components/Layout/SettingsFormPageLayout';
 import type {
   UserCreateInput,
   UserUpdateInput,
@@ -120,17 +121,10 @@ export default function EditUserPage() {
 
   return (
     <ProtectedRoute permission="users:update">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Modifier l&apos;utilisateur
-            </h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">
-              Mise à jour du compte de {user.firstName} {user.lastName}
-            </p>
-          </div>
-
+      <SettingsFormPageLayout
+        title="Modifier l'utilisateur"
+        description={`Mise à jour du compte de ${user.firstName} ${user.lastName}`}
+        action={
           <Button
             variant="secondary"
             icon={<ArrowLeft className="w-4 h-4" />}
@@ -140,8 +134,8 @@ export default function EditUserPage() {
           >
             Retour à la liste
           </Button>
-        </div>
-
+        }
+      >
         <UserForm
           initialData={{
             id: user.id,
@@ -162,7 +156,7 @@ export default function EditUserPage() {
           isSubmitting={isSubmitting}
           error={formError}
         />
-      </div>
+      </SettingsFormPageLayout>
     </ProtectedRoute>
   );
 }

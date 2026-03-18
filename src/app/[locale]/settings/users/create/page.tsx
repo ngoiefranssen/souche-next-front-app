@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button/Button';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useToast } from '@/hooks/useToast';
 import { usersAPI } from '@/lib/api/users';
+import SettingsFormPageLayout from '@/components/Layout/SettingsFormPageLayout';
 import type {
   UserCreateInput,
   UserUpdateInput,
@@ -69,17 +70,10 @@ export default function CreateUserPage() {
 
   return (
     <ProtectedRoute permission="users:create">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Créer un utilisateur
-            </h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">
-              Renseignez les informations du nouvel utilisateur
-            </p>
-          </div>
-
+      <SettingsFormPageLayout
+        title="Créer un utilisateur"
+        description="Renseignez les informations du nouvel utilisateur"
+        action={
           <Button
             variant="secondary"
             icon={<ArrowLeft className="w-4 h-4" />}
@@ -89,15 +83,15 @@ export default function CreateUserPage() {
           >
             Retour à la liste
           </Button>
-        </div>
-
+        }
+      >
         <UserForm
           onSubmit={handleCreate}
           onCancel={() => router.push(`/${locale}/settings/users`)}
           isSubmitting={isSubmitting}
           error={formError}
         />
-      </div>
+      </SettingsFormPageLayout>
     </ProtectedRoute>
   );
 }

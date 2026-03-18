@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Bell,
   Menu as MenuIcon,
@@ -20,6 +20,7 @@ import {
   AppMenuItem,
   AppMenuItems,
 } from '@/components/ui/Headless';
+import { Breadcrumb } from './Breadcrumb';
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
@@ -38,38 +39,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const [currentDateTime, setCurrentDateTime] = useState('');
-
-  useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      };
-
-      const formatter = new Intl.DateTimeFormat(
-        locale === 'fr' ? 'fr-FR' : 'en-US',
-        options
-      );
-      const formattedDate = formatter.format(now);
-
-      setCurrentDateTime(
-        formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1)
-      );
-    };
-
-    updateDateTime();
-    const interval = setInterval(updateDateTime, 1000);
-
-    return () => clearInterval(interval);
-  }, [locale]);
 
   const handleLogout = async () => {
     try {
@@ -110,8 +79,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <MenuIcon className="w-6 h-6" />
           </button>
 
-          <div className="hidden md:flex items-center px-4 py-2 text-gray-600 text-sm font-medium">
-            {currentDateTime}
+          <div className="hidden md:flex items-center px-4 py-2">
+            <Breadcrumb />
           </div>
         </div>
 

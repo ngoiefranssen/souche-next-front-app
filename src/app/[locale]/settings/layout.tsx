@@ -54,14 +54,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const tSidebar = useTranslations('sidebar');
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
+    <div className="h-full">
       <SettingsSidebar
         title={tSidebar('settings')}
         items={menuItems}
         getItemLabel={tBreadcrumb}
+        className="mb-3 lg:mb-0 lg:fixed lg:left-[96px] lg:top-[72px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto lg:z-20"
       />
 
-      <main className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+      <main className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-2 lg:ml-[312px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto">
         {children}
       </main>
     </div>

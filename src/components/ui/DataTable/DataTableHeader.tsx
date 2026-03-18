@@ -25,17 +25,17 @@ export function DataTableHeader<T extends object>({
 }: DataTableHeaderProps<T>) {
   const getSortIcon = (columnKey: string) => {
     if (sortConfig.key !== columnKey) {
-      return <ChevronsUpDown className="w-4 h-4 text-white" />;
+      return <ChevronsUpDown className="w-4 h-4 text-[#5A708A]" />;
     }
     return sortConfig.direction === 'asc' ? (
-      <ChevronUp className="w-4 h-4 text-white" />
+      <ChevronUp className="w-4 h-4 text-[#5A708A]" />
     ) : (
-      <ChevronDown className="w-4 h-4 text-white" />
+      <ChevronDown className="w-4 h-4 text-[#5A708A]" />
     );
   };
 
   return (
-    <thead className="bg-[#356ca5]">
+    <thead className="bg-[#ECF1F6]">
       <tr>
         {selectable && (
           <th className="px-6 py-3 w-12">
@@ -49,7 +49,7 @@ export function DataTableHeader<T extends object>({
                   onSelectAll(!allSelected);
                 }
               }}
-              className="w-4 h-4 text-[#356ca5] bg-white border-white/80 rounded focus:ring-2 focus:ring-white/70"
+              className="w-4 h-4 text-[#5A708A] bg-white border-[#C7D3E0] rounded focus:ring-2 focus:ring-[#C7D3E0]"
               aria-label="Sélectionner toutes les lignes"
             />
           </th>
@@ -58,7 +58,7 @@ export function DataTableHeader<T extends object>({
           <th
             key={column.key}
             style={{ width: column.width }}
-            className={`px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider ${
+            className={`px-6 py-3 text-xs font-semibold text-[#2C4663] uppercase tracking-wider ${
               column.align === 'center'
                 ? 'text-center'
                 : column.align === 'right'
@@ -75,7 +75,7 @@ export function DataTableHeader<T extends object>({
                     onSort(column.key);
                   }
                 }}
-                className="inline-flex items-center gap-1 text-white transition focus:outline-none rounded px-1"
+                className="inline-flex items-center gap-1 text-[#2C4663] transition focus:outline-none rounded px-1"
                 aria-label={`Trier par ${column.label}`}
               >
                 <span>{column.label}</span>
@@ -87,7 +87,7 @@ export function DataTableHeader<T extends object>({
           </th>
         ))}
         {hasActions && (
-          <th className="px-6 py-3 text-right text-xs font-semibold text-white uppercase tracking-wider">
+          <th className="px-6 py-3 text-right text-xs font-semibold text-[#2C4663] uppercase tracking-wider">
             {actionsLabel}
           </th>
         )}

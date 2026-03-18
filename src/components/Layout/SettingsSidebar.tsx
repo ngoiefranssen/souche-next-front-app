@@ -41,8 +41,8 @@ export default function SettingsSidebar({
   return (
     <aside
       className={[
-        'w-full rounded-xl border border-[#E4E9F0] bg-white p-3 shadow-sm',
-        'lg:w-[300px] lg:self-start lg:sticky lg:top-3',
+        'w-full h-full rounded-xl border border-[#E4E9F0] bg-white p-3 shadow-sm',
+        'lg:w-[300px] lg:self-stretch',
         className,
       ]
         .filter(Boolean)
