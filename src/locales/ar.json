@@ -13,6 +13,71 @@
     "settings": "الإعدادات",
     "menu": "القائمة"
   },
+  "accountProfile": {
+    "tabs": {
+      "profile": "الملف الشخصي للحساب",
+      "security": "الأمان"
+    },
+    "sections": {
+      "profileCard": "الملف الشخصي",
+      "accountDetails": "تعديل تفاصيل الحساب",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "avatar": {
+      "alt": "صورة الملف الشخصي",
+      "chooseImage": "اختر الصورة",
+      "dropzone": "اسحب وأفلت هنا.",
+      "invalidType": "يرجى اختيار ملف صورة صالح (JPG, PNG, GIF).",
+      "maxSize": "الحد الأقصى المسموح به هو 5 ميغابايت."
+    },
+    "fields": {
+      "lastName": "اسم العائلة",
+      "firstName": "الاسم الأول",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "أعد إدخال كلمة المرور"
+    },
+    "placeholders": {
+      "lastName": "اسم العائلة",
+      "firstName": "الاسم الأول",
+      "username": "اسم المستخدم",
+      "email": "your.email@example.com",
+      "phone": "0900000000",
+      "currentPassword": "أدخل كلمة المرور الحالية",
+      "newPassword": "أدخل كلمة المرور",
+      "confirmPassword": "أدخل كلمة المرور"
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "reset": "إعادة تعيين",
+      "updateProfile": "تحديث الملف الشخصي",
+      "updatePassword": "تحديث كلمة المرور"
+    },
+    "validation": {
+      "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
+      "newPasswordRequired": "كلمة المرور الجديدة مطلوبة",
+      "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "confirmPasswordRequired": "يرجى تأكيد كلمة المرور الجديدة",
+      "confirmPasswordMismatch": "التأكيد غير متطابق"
+    },
+    "toasts": {
+      "userNotFound": "المستخدم غير موجود. يرجى تسجيل الدخول مرة أخرى.",
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+      "profileUpdateError": "حدث خطأ أثناء تحديث الملف الشخصي.",
+      "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+      "passwordUpdateError": "حدث خطأ أثناء تحديث كلمة المرور."
+    },
+    "accessibility": {
+      "hidePassword": "إخفاء كلمة المرور",
+      "showPassword": "إظهار كلمة المرور"
+    },
+    "fallback": {
+      "userInitial": "م"
+    }
+  },
   "errors": {
     "forbidden": {
       "title": "تم رفض الوصول",

@@ -84,6 +84,7 @@ export default function EditUserPage() {
         hireDate: updateData.hireDate,
         employmentStatusId: updateData.employmentStatusId,
         profileId: updateData.profileId,
+        isActive: updateData.isActive,
         ...(photo ? { profilePhoto: photo } : {}),
       };
 
@@ -143,12 +144,13 @@ export default function EditUserPage() {
             username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,
-            phone: user.phone || '',
-            salary: user.salary || 0,
-            hireDate: user.hireDate ? new Date(user.hireDate) : new Date(),
+            phone: user.phone ?? undefined,
+            salary: user.salary ?? undefined,
+            hireDate: user.hireDate ? new Date(user.hireDate) : undefined,
             employmentStatusId:
-              user.employmentStatusId || user.employmentStatus?.id || 0,
-            profileId: user.profileId || user.profile?.id || 0,
+              user.employmentStatusId ?? user.employmentStatus?.id ?? undefined,
+            profileId: user.profileId ?? user.profile?.id ?? undefined,
+            isActive: user.isActive,
             profilePhoto: user.profilePhoto || undefined,
           }}
           onSubmit={handleUpdate}

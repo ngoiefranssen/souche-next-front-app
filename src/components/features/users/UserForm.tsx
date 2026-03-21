@@ -84,7 +84,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   isSubmitting = false,
   error,
 }) => {
-  type UserFormInput = UserCreateInput & {
+  type UserFormInput = Partial<UserCreateInput> & {
     profilePhoto?: File | null;
   };
 
@@ -98,12 +98,16 @@ export const UserForm: React.FC<UserFormProps> = ({
     firstName: initialData?.firstName ?? '',
     lastName: initialData?.lastName ?? '',
     phone: initialData?.phone ?? '',
-    salary: initialData?.salary ?? 0,
+    salary: initialData?.salary ?? (isEditMode ? undefined : 0),
     hireDate: initialData?.hireDate
       ? new Date(initialData.hireDate)
-      : new Date(),
-    employmentStatusId: initialData?.employmentStatusId ?? 0,
-    profileId: initialData?.profileId ?? 0,
+      : isEditMode
+        ? undefined
+        : new Date(),
+    employmentStatusId:
+      initialData?.employmentStatusId ?? (isEditMode ? undefined : 0),
+    profileId: initialData?.profileId ?? (isEditMode ? undefined : 0),
+    isActive: initialData?.isActive ?? true,
     profilePhoto: null,
   };
 
@@ -123,7 +127,7 @@ export const UserForm: React.FC<UserFormProps> = ({
     register,
     handleSubmit,
     control,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
   } = useForm<UserFormInput>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -163,7 +167,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         return;
       }
 
-      await onSubmit(data, photoFile || undefined);
+      await onSubmit(data as UserCreateInput, photoFile || undefined);
     } catch (err) {
       console.error('Form submission error:', err);
     }
@@ -412,7 +416,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             icon={<Phone className="w-4 h-4" />}
             placeholder="+33612345678"
             type="tel"
-            required
+            required={!isEditMode}
             disabled={isSubmitting}
             autoComplete="tel"
           />
@@ -453,9 +457,12 @@ export const UserForm: React.FC<UserFormProps> = ({
                 label="Profil"
                 {...field}
                 value={field.value?.toString() || ''}
-                onChange={e => field.onChange(parseInt(e.target.value, 10))}
+                onChange={e => {
+                  const value = e.target.value;
+                  field.onChange(value ? parseInt(value, 10) : undefined);
+                }}
                 error={errors.profileId?.message}
-                required
+                required={!isEditMode}
                 disabled={isSubmitting}
                 options={[
                   { value: '', label: 'Sélectionner un profil' },
@@ -476,9 +483,12 @@ export const UserForm: React.FC<UserFormProps> = ({
                 label="Statut d'emploi"
                 {...field}
                 value={field.value?.toString() || ''}
-                onChange={e => field.onChange(parseInt(e.target.value, 10))}
+                onChange={e => {
+                  const value = e.target.value;
+                  field.onChange(value ? parseInt(value, 10) : undefined);
+                }}
                 error={errors.employmentStatusId?.message}
-                required
+                required={!isEditMode}
                 disabled={isSubmitting}
                 options={[
                   { value: '', label: 'Sélectionner un statut' },
@@ -499,7 +509,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             placeholder="50000"
             type="number"
             step="0.01"
-            required
+            required={!isEditMode}
             disabled={isSubmitting}
           />
 
@@ -523,13 +533,35 @@ export const UserForm: React.FC<UserFormProps> = ({
                   )
                 }
                 error={errors.hireDate?.message}
-                required
+                required={!isEditMode}
                 disabled={isSubmitting}
                 max={new Date().toISOString().split('T')[0]}
               />
             )}
           />
         </div>
+      </div>
+
+      {/* Section: Statut du compte */}
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h3 className="mb-3 text-lg font-semibold text-gray-900">
+          Statut du compte
+        </h3>
+        <label className="inline-flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register('isActive')}
+            disabled={isSubmitting}
+            className="h-4 w-4 rounded border-gray-300 text-[#2B6A8E] focus:ring-[#2B6A8E]"
+          />
+          <span className="text-sm font-medium text-gray-700">
+            Compte actif (autorisé à se connecter)
+          </span>
+        </label>
+        <p className="mt-2 text-sm text-gray-500">
+          Si ce champ est désactivé, l&apos;utilisateur ne pourra plus accéder à
+          l&apos;application.
+        </p>
       </div>
 
       {/* Actions */}
@@ -550,7 +582,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         <Button
           type="submit"
           variant="primary"
-          disabled={isSubmitting || !isValid}
+          disabled={isSubmitting || (isEditMode ? !isDirty : !isValid)}
           loading={isSubmitting}
           fullWidth
           className="sm:w-auto"

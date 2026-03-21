@@ -24,6 +24,7 @@ interface BackendUserListItem {
   username: string;
   firstName: string;
   lastName: string;
+  isActive: boolean;
   phone?: string | null;
   profilePhoto?: string | null;
   profileId?: number | null;
@@ -49,6 +50,7 @@ interface BackendUserResponse {
     username: string;
     firstName: string;
     lastName: string;
+    isActive: boolean;
     phone?: string | null;
     profilePhoto?: string | null;
     salary?: number | null;
@@ -76,6 +78,7 @@ const toUserListItem = (item: BackendUserListItem): UserListItem => ({
   username: item.username,
   firstName: item.firstName,
   lastName: item.lastName,
+  isActive: item.isActive,
   phone: item.phone,
   profilePhoto: item.profilePhoto,
   profileId: item.profileId,
@@ -105,6 +108,7 @@ const toUser = (payload: BackendUserResponse['data']): User => ({
   username: payload.username,
   firstName: payload.firstName,
   lastName: payload.lastName,
+  isActive: payload.isActive,
   phone: payload.phone,
   profilePhoto: payload.profilePhoto,
   salary: payload.salary,
@@ -147,6 +151,10 @@ const buildUserPayload = (
     if (value === undefined || value === null || value === '') return;
     formData.append(key, String(value));
   };
+  const appendBoolean = (key: string, value?: boolean) => {
+    if (value === undefined) return;
+    formData.append(key, value ? 'true' : 'false');
+  };
 
   if (includeRequiredFields || data.email !== undefined) {
     appendString('email', data.email);
@@ -177,6 +185,9 @@ const buildUserPayload = (
   }
   if (includeRequiredFields || data.profileId !== undefined) {
     appendString('profile_id', data.profileId);
+  }
+  if (includeRequiredFields || data.isActive !== undefined) {
+    appendBoolean('is_active', data.isActive);
   }
 
   if (data.profilePhoto instanceof File) {

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/DataTable/types';
 import { UserListItem } from '@/types/user';
 import { Badge } from '@/components/ui/Badge/Badge';
-import { Edit, KeyRound, Trash2 } from 'lucide-react';
+import { Edit, KeyRound, UserCheck, UserX } from 'lucide-react';
 import { usePermission } from '@/hooks/usePermission';
 
 interface UserTableProps {
@@ -17,7 +17,8 @@ interface UserTableProps {
   loading?: boolean;
   pagination?: PaginationConfig;
   onEdit?: (user: UserListItem) => void;
-  onDelete?: (user: UserListItem) => void;
+  onDeactivate?: (user: UserListItem) => void;
+  onReactivate?: (user: UserListItem) => void;
   onManagePermissions?: (user: UserListItem) => void;
   onSort?: (key: string, direction: 'asc' | 'desc') => void;
   onFilter?: (filters: Record<string, unknown>) => void;
@@ -28,7 +29,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   loading = false,
   pagination,
   onEdit,
-  onDelete,
+  onDeactivate,
+  onReactivate,
   onManagePermissions,
   onSort,
   onFilter,
@@ -85,6 +87,17 @@ export const UserTable: React.FC<UserTableProps> = ({
         </Badge>
       ),
     },
+    {
+      key: 'isActive',
+      label: 'Accès',
+      sortable: false,
+      filterable: false,
+      render: (_value, row) => (
+        <Badge variant={row.isActive ? 'success' : 'danger'}>
+          {row.isActive ? 'Actif' : 'Désactivé'}
+        </Badge>
+      ),
+    },
   ];
 
   const actions: ActionButton<UserListItem>[] = [];
@@ -107,12 +120,23 @@ export const UserTable: React.FC<UserTableProps> = ({
     });
   }
 
-  if (onDelete && hasPermission('users:delete')) {
+  if (onDeactivate && hasPermission('users:update')) {
     actions.push({
-      label: 'Supprimer',
-      icon: <Trash2 className="w-4 h-4" />,
-      onClick: onDelete,
+      label: 'Désactiver',
+      icon: <UserX className="w-4 h-4" />,
+      onClick: onDeactivate,
       variant: 'danger',
+      show: row => row.isActive,
+    });
+  }
+
+  if (onReactivate && hasPermission('users:update')) {
+    actions.push({
+      label: 'Réactiver',
+      icon: <UserCheck className="w-4 h-4" />,
+      onClick: onReactivate,
+      variant: 'success',
+      show: row => !row.isActive,
     });
   }
 

@@ -59,6 +59,71 @@
     "profile": "Profil",
     "help": "Aide"
   },
+  "accountProfile": {
+    "tabs": {
+      "profile": "Profil du compte",
+      "security": "Sécurité"
+    },
+    "sections": {
+      "profileCard": "Profile",
+      "accountDetails": "Modifier les détails du compte",
+      "changePassword": "Changer le mot de passe"
+    },
+    "avatar": {
+      "alt": "Photo de profil",
+      "chooseImage": "Choisir l'image",
+      "dropzone": "Glisser et déposez ici.",
+      "invalidType": "Veuillez choisir un fichier image valide (JPG, PNG, GIF).",
+      "maxSize": "La taille maximale autorisée est de 5 MB."
+    },
+    "fields": {
+      "lastName": "Nom",
+      "firstName": "Prénom",
+      "username": "Nom d'utilisateur",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Entrez à nouveau le mot de passe"
+    },
+    "placeholders": {
+      "lastName": "Votre nom",
+      "firstName": "Votre prénom",
+      "username": "Votre nom d'utilisateur",
+      "email": "votre.email@example.com",
+      "phone": "0900000000",
+      "currentPassword": "Entrez votre mot de passe actuel",
+      "newPassword": "Écrire le mot de passe",
+      "confirmPassword": "Écrire le mot de passe"
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "reset": "Réinitialiser",
+      "updateProfile": "Modifier le profil",
+      "updatePassword": "Modifier le mot de passe"
+    },
+    "validation": {
+      "currentPasswordRequired": "Le mot de passe actuel est requis",
+      "newPasswordRequired": "Le nouveau mot de passe est requis",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPasswordRequired": "Veuillez confirmer le nouveau mot de passe",
+      "confirmPasswordMismatch": "La confirmation ne correspond pas"
+    },
+    "toasts": {
+      "userNotFound": "Utilisateur introuvable. Veuillez vous reconnecter.",
+      "profileUpdated": "Profil mis à jour avec succès.",
+      "profileUpdateError": "Erreur lors de la mise à jour du profil.",
+      "passwordUpdated": "Mot de passe mis à jour avec succès.",
+      "passwordUpdateError": "Erreur lors de la mise à jour du mot de passe."
+    },
+    "accessibility": {
+      "hidePassword": "Masquer le mot de passe",
+      "showPassword": "Afficher le mot de passe"
+    },
+    "fallback": {
+      "userInitial": "U"
+    }
+  },
   "breadcrumb": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",

@@ -68,6 +68,71 @@
     "required": "Required",
     "optional": "Optional"
   },
+  "accountProfile": {
+    "tabs": {
+      "profile": "Account Profile",
+      "security": "Security"
+    },
+    "sections": {
+      "profileCard": "Profile",
+      "accountDetails": "Edit account details",
+      "changePassword": "Change password"
+    },
+    "avatar": {
+      "alt": "Profile photo",
+      "chooseImage": "Choose image",
+      "dropzone": "Drag and drop here.",
+      "invalidType": "Please choose a valid image file (JPG, PNG, GIF).",
+      "maxSize": "Maximum allowed size is 5 MB."
+    },
+    "fields": {
+      "lastName": "Last name",
+      "firstName": "First name",
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone number",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Re-enter password"
+    },
+    "placeholders": {
+      "lastName": "Your last name",
+      "firstName": "Your first name",
+      "username": "Your username",
+      "email": "your.email@example.com",
+      "phone": "0900000000",
+      "currentPassword": "Enter your current password",
+      "newPassword": "Enter password",
+      "confirmPassword": "Enter password"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "reset": "Reset",
+      "updateProfile": "Update profile",
+      "updatePassword": "Update password"
+    },
+    "validation": {
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordRequired": "New password is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "confirmPasswordRequired": "Please confirm the new password",
+      "confirmPasswordMismatch": "Confirmation does not match"
+    },
+    "toasts": {
+      "userNotFound": "User not found. Please sign in again.",
+      "profileUpdated": "Profile updated successfully.",
+      "profileUpdateError": "Error while updating profile.",
+      "passwordUpdated": "Password updated successfully.",
+      "passwordUpdateError": "Error while updating password."
+    },
+    "accessibility": {
+      "hidePassword": "Hide password",
+      "showPassword": "Show password"
+    },
+    "fallback": {
+      "userInitial": "U"
+    }
+  },
   "auth": {
     "welcomeBack": "Welcome Back",
     "loginPrompt": "Sign in to your account",

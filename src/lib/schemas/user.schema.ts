@@ -69,6 +69,8 @@ const userCreateBaseSchema = z.object({
     .number()
     .int("L'ID du profil doit être un entier")
     .positive("L'ID du profil doit être positif"),
+
+  isActive: z.boolean().default(true),
 });
 
 export const userCreateSchema = userCreateBaseSchema.refine(
@@ -79,13 +81,49 @@ export const userCreateSchema = userCreateBaseSchema.refine(
   }
 );
 
+const optionalFromEmptyString = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess(
+    value =>
+      value === '' || value === null || value === undefined ? undefined : value,
+    schema.optional()
+  );
+
 /**
  * Schema de validation pour la mise à jour d'un utilisateur
  * Tous les champs sont optionnels sauf le mot de passe qui est exclu
  */
 export const userUpdateSchema = userCreateBaseSchema
   .partial()
-  .omit({ password: true, confirmPassword: true });
+  .omit({ password: true, confirmPassword: true })
+  .extend({
+    phone: optionalFromEmptyString(
+      z
+        .string()
+        .max(20, 'Le numéro de téléphone ne peut pas dépasser 20 caractères')
+    ),
+    salary: optionalFromEmptyString(
+      z.number().min(0, 'Le salaire ne peut pas être négatif')
+    ),
+    hireDate: optionalFromEmptyString(
+      z
+        .date({
+          invalid_type_error: 'Format de date invalide',
+        })
+        .max(new Date(), "La date d'embauche ne peut pas être dans le futur")
+    ),
+    employmentStatusId: optionalFromEmptyString(
+      z
+        .number()
+        .int("L'ID du statut d'emploi doit être un entier")
+        .positive("L'ID du statut d'emploi doit être positif")
+    ),
+    profileId: optionalFromEmptyString(
+      z
+        .number()
+        .int("L'ID du profil doit être un entier")
+        .positive("L'ID du profil doit être positif")
+    ),
+  });
 
 /**
  * Schema de validation pour le changement de mot de passe

@@ -45,6 +45,7 @@ export default function CreateUserPage() {
         hireDate: createData.hireDate,
         employmentStatusId: createData.employmentStatusId,
         profileId: createData.profileId,
+        isActive: createData.isActive,
         ...(photo ? { profilePhoto: photo } : {}),
       };
 

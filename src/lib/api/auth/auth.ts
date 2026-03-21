@@ -19,6 +19,7 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
+  isActive: boolean;
   phone: string;
   profilePhoto: string;
   profile: {

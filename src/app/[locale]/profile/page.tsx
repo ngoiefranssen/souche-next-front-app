@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Eye,
   EyeOff,
@@ -62,6 +63,8 @@ interface PasswordFieldProps {
   label: string;
   value: string;
   placeholder: string;
+  showPasswordAriaLabel: string;
+  hidePasswordAriaLabel: string;
   visible: boolean;
   onToggle: () => void;
   onChange: (value: string) => void;
@@ -74,6 +77,8 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
   label,
   value,
   placeholder,
+  showPasswordAriaLabel,
+  hidePasswordAriaLabel,
   visible,
   onToggle,
   onChange,
@@ -110,9 +115,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
           type="button"
           onClick={onToggle}
           className="absolute inset-y-0 right-2 inline-flex items-center justify-center text-gray-500 transition-colors hover:text-gray-700 focus:outline-none"
-          aria-label={
-            visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
-          }
+          aria-label={visible ? hidePasswordAriaLabel : showPasswordAriaLabel}
         >
           {visible ? (
             <EyeOff className="h-4 w-4" />
@@ -133,6 +136,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
 export default function ProfilePage() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const t = useTranslations('accountProfile');
 
   const [activeTab, setActiveTab] = useState<AccountTab>('profile');
   const [profileForm, setProfileForm] = useState<ProfileFormState>(() =>
@@ -190,7 +194,7 @@ export default function ProfilePage() {
 
     if (!file.type.startsWith('image/')) {
       showToast({
-        message: 'Veuillez choisir un fichier image valide (JPG, PNG, GIF).',
+        message: t('avatar.invalidType'),
         variant: 'error',
       });
       return;
@@ -199,7 +203,7 @@ export default function ProfilePage() {
     const maxFileSize = 5 * 1024 * 1024;
     if (file.size > maxFileSize) {
       showToast({
-        message: 'La taille maximale autorisée est de 5 MB.',
+        message: t('avatar.maxSize'),
         variant: 'error',
       });
       return;
@@ -229,7 +233,7 @@ export default function ProfilePage() {
 
     if (!user) {
       showToast({
-        message: 'Utilisateur introuvable. Veuillez vous reconnecter.',
+        message: t('toasts.userNotFound'),
         variant: 'error',
       });
       return;
@@ -283,14 +287,12 @@ export default function ProfilePage() {
       }
 
       showToast({
-        message: 'Profil mis à jour avec succès.',
+        message: t('toasts.profileUpdated'),
         variant: 'success',
       });
     } catch (error: unknown) {
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Erreur lors de la mise à jour du profil.';
+        error instanceof Error ? error.message : t('toasts.profileUpdateError');
 
       showToast({
         message,
@@ -323,20 +325,19 @@ export default function ProfilePage() {
     const errors: SecurityErrors = {};
 
     if (!securityForm.currentPassword.trim()) {
-      errors.currentPassword = 'Le mot de passe actuel est requis';
+      errors.currentPassword = t('validation.currentPasswordRequired');
     }
 
     if (!securityForm.newPassword.trim()) {
-      errors.newPassword = 'Le nouveau mot de passe est requis';
+      errors.newPassword = t('validation.newPasswordRequired');
     } else if (securityForm.newPassword.length < 8) {
-      errors.newPassword =
-        'Le mot de passe doit contenir au moins 8 caractères';
+      errors.newPassword = t('validation.passwordMinLength');
     }
 
     if (!securityForm.confirmPassword.trim()) {
-      errors.confirmPassword = 'Veuillez confirmer le nouveau mot de passe';
+      errors.confirmPassword = t('validation.confirmPasswordRequired');
     } else if (securityForm.confirmPassword !== securityForm.newPassword) {
-      errors.confirmPassword = 'La confirmation ne correspond pas';
+      errors.confirmPassword = t('validation.confirmPasswordMismatch');
     }
 
     return errors;
@@ -359,7 +360,7 @@ export default function ProfilePage() {
 
     if (!user) {
       showToast({
-        message: 'Utilisateur introuvable. Veuillez vous reconnecter.',
+        message: t('toasts.userNotFound'),
         variant: 'error',
       });
       return;
@@ -381,14 +382,14 @@ export default function ProfilePage() {
       handleSecurityReset();
 
       showToast({
-        message: 'Mot de passe mis à jour avec succès.',
+        message: t('toasts.passwordUpdated'),
         variant: 'success',
       });
     } catch (error: unknown) {
       const message =
         error instanceof Error
           ? error.message
-          : 'Erreur lors de la mise à jour du mot de passe.';
+          : t('toasts.passwordUpdateError');
 
       showToast({
         message,
@@ -399,8 +400,11 @@ export default function ProfilePage() {
     }
   };
 
+  const fallbackInitial = t('fallback.userInitial');
   const userInitial =
-    user?.firstName?.charAt(0) || user?.username?.charAt(0) || 'U';
+    user?.firstName?.charAt(0) ||
+    user?.username?.charAt(0) ||
+    fallbackInitial.charAt(0);
 
   const profileTabClassName =
     activeTab === 'profile'
@@ -422,7 +426,7 @@ export default function ProfilePage() {
             className={`inline-flex cursor-pointer items-center gap-2 border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${profileTabClassName}`}
           >
             <User className="h-4 w-4" />
-            <span>Profil du compte</span>
+            <span>{t('tabs.profile')}</span>
           </button>
 
           <button
@@ -431,7 +435,7 @@ export default function ProfilePage() {
             className={`inline-flex cursor-pointer items-center gap-2 border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${securityTabClassName}`}
           >
             <Lock className="h-4 w-4" />
-            <span>Sécurité</span>
+            <span>{t('tabs.security')}</span>
           </button>
         </div>
       </div>
@@ -444,7 +448,7 @@ export default function ProfilePage() {
                 <div className="overflow-hidden rounded-lg border border-gray-200">
                   <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
                     <h2 className="text-base font-semibold text-gray-800">
-                      Profile
+                      {t('sections.profileCard')}
                     </h2>
                   </div>
 
@@ -453,7 +457,7 @@ export default function ProfilePage() {
                       {avatarPreview ? (
                         <img
                           src={avatarPreview}
-                          alt="Photo de profil"
+                          alt={t('avatar.alt')}
                           className="h-20 w-20 rounded-full border border-gray-200 object-cover"
                         />
                       ) : (
@@ -483,7 +487,7 @@ export default function ProfilePage() {
                         iconPosition="left"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        Choisir l&apos;image
+                        {t('avatar.chooseImage')}
                       </Button>
 
                       <Button
@@ -494,7 +498,7 @@ export default function ProfilePage() {
                         iconPosition="left"
                         onClick={handleProfileReset}
                       >
-                        Annuler
+                        {t('actions.cancel')}
                       </Button>
                     </div>
 
@@ -510,7 +514,7 @@ export default function ProfilePage() {
                         handleAvatarSelection(droppedFile);
                       }}
                     >
-                      Glisser et déposez ici.
+                      {t('avatar.dropzone')}
                     </div>
                   </div>
                 </div>
@@ -520,24 +524,24 @@ export default function ProfilePage() {
                 <div className="overflow-hidden rounded-lg border border-gray-200">
                   <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
                     <h2 className="text-base font-semibold text-gray-800">
-                      Modifier les détails du compte
+                      {t('sections.accountDetails')}
                     </h2>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
                     <FormField
-                      label="Nom"
+                      label={t('fields.lastName')}
                       value={profileForm.lastName}
                       onChange={event =>
                         handleProfileInputChange('lastName', event.target.value)
                       }
-                      placeholder="Votre nom"
+                      placeholder={t('placeholders.lastName')}
                       required
                       disabled={isSubmittingProfile}
                     />
 
                     <FormField
-                      label="Prénom"
+                      label={t('fields.firstName')}
                       value={profileForm.firstName}
                       onChange={event =>
                         handleProfileInputChange(
@@ -545,31 +549,31 @@ export default function ProfilePage() {
                           event.target.value
                         )
                       }
-                      placeholder="Votre prénom"
+                      placeholder={t('placeholders.firstName')}
                       required
                       disabled={isSubmittingProfile}
                     />
 
                     <FormField
-                      label="Nom d'utilisateur"
+                      label={t('fields.username')}
                       value={profileForm.username}
                       onChange={event =>
                         handleProfileInputChange('username', event.target.value)
                       }
-                      placeholder="Votre nom d'utilisateur"
+                      placeholder={t('placeholders.username')}
                       required
                       disabled={isSubmittingProfile}
                       autoComplete="username"
                     />
 
                     <FormField
-                      label="E-mail"
+                      label={t('fields.email')}
                       type="email"
                       value={profileForm.email}
                       onChange={event =>
                         handleProfileInputChange('email', event.target.value)
                       }
-                      placeholder="votre.email@example.com"
+                      placeholder={t('placeholders.email')}
                       required
                       disabled={isSubmittingProfile}
                       autoComplete="email"
@@ -577,13 +581,13 @@ export default function ProfilePage() {
 
                     <div className="md:col-span-2">
                       <FormField
-                        label="Numéro de téléphone"
+                        label={t('fields.phone')}
                         type="tel"
                         value={profileForm.phone}
                         onChange={event =>
                           handleProfileInputChange('phone', event.target.value)
                         }
-                        placeholder="0900000000"
+                        placeholder={t('placeholders.phone')}
                         required
                         disabled={isSubmittingProfile}
                         autoComplete="tel"
@@ -603,7 +607,7 @@ export default function ProfilePage() {
                 onClick={handleProfileReset}
                 className="!bg-amber-500 !text-white hover:!bg-amber-600 focus:!ring-amber-500"
               >
-                Réinitialiser
+                {t('actions.reset')}
               </Button>
 
               <Button
@@ -614,7 +618,7 @@ export default function ProfilePage() {
                 iconPosition="left"
                 className="!bg-[#0C6984] hover:!bg-[#09566c] focus:!ring-[#0C6984]"
               >
-                Modifier le profil
+                {t('actions.updateProfile')}
               </Button>
             </div>
           </form>
@@ -625,13 +629,13 @@ export default function ProfilePage() {
                 <div className="overflow-hidden rounded-lg border border-gray-200">
                   <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
                     <h2 className="text-base font-semibold text-gray-800">
-                      Changer le mot de passe
+                      {t('sections.changePassword')}
                     </h2>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
                     <FormField
-                      label="Nom d'utilisateur"
+                      label={t('fields.username')}
                       value={user?.username || ''}
                       readOnly
                       className="bg-gray-50"
@@ -639,9 +643,11 @@ export default function ProfilePage() {
 
                     <PasswordField
                       id="current-password"
-                      label="Mot de passe actuel"
+                      label={t('fields.currentPassword')}
                       value={securityForm.currentPassword}
-                      placeholder="Entrez votre mot de passe actuel"
+                      placeholder={t('placeholders.currentPassword')}
+                      showPasswordAriaLabel={t('accessibility.showPassword')}
+                      hidePasswordAriaLabel={t('accessibility.hidePassword')}
                       visible={passwordVisibility.current}
                       onToggle={() =>
                         setPasswordVisibility(previous => ({
@@ -658,9 +664,11 @@ export default function ProfilePage() {
 
                     <PasswordField
                       id="new-password"
-                      label="Nouveau mot de passe"
+                      label={t('fields.newPassword')}
                       value={securityForm.newPassword}
-                      placeholder="Écrire le mot de passe"
+                      placeholder={t('placeholders.newPassword')}
+                      showPasswordAriaLabel={t('accessibility.showPassword')}
+                      hidePasswordAriaLabel={t('accessibility.hidePassword')}
                       visible={passwordVisibility.next}
                       onToggle={() =>
                         setPasswordVisibility(previous => ({
@@ -677,9 +685,11 @@ export default function ProfilePage() {
 
                     <PasswordField
                       id="confirm-password"
-                      label="Entrez à nouveau le mot de passe"
+                      label={t('fields.confirmPassword')}
                       value={securityForm.confirmPassword}
-                      placeholder="Écrire le mot de passe"
+                      placeholder={t('placeholders.confirmPassword')}
+                      showPasswordAriaLabel={t('accessibility.showPassword')}
+                      hidePasswordAriaLabel={t('accessibility.hidePassword')}
                       visible={passwordVisibility.confirm}
                       onToggle={() =>
                         setPasswordVisibility(previous => ({
@@ -707,7 +717,7 @@ export default function ProfilePage() {
                 onClick={handleSecurityReset}
                 className="!bg-amber-500 !text-white hover:!bg-amber-600 focus:!ring-amber-500"
               >
-                Réinitialiser
+                {t('actions.reset')}
               </Button>
               <Button
                 type="submit"
@@ -717,7 +727,7 @@ export default function ProfilePage() {
                 iconPosition="left"
                 className="!bg-[#0C6984] hover:!bg-[#09566c] focus:!ring-[#0C6984]"
               >
-                Modifier le mot de passe
+                {t('actions.updatePassword')}
               </Button>
             </div>
           </form>

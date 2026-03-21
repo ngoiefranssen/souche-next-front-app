@@ -15,6 +15,7 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
+  isActive: boolean;
   phone?: string | null;
   profilePhoto?: string | null;
   salary?: number | null;
@@ -37,6 +38,7 @@ export interface UserListItem {
   username: string;
   firstName: string;
   lastName: string;
+  isActive: boolean;
   phone?: string | null;
   profilePhoto?: string | null;
   hireDate?: string | null;
@@ -66,6 +68,7 @@ export interface UserFormData {
   firstName: string;
   lastName: string;
   phone: string;
+  isActive?: boolean;
   profilePhoto?: File;
   salary: number;
   hireDate: Date;

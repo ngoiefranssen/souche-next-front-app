@@ -25,7 +25,10 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [statusAction, setStatusAction] = useState<'deactivate' | 'reactivate'>(
+    'deactivate'
+  );
   const [selectedUser, setSelectedUser] = useState<UserListItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,26 +58,30 @@ export default function UsersPage() {
     loadUsers();
   }, [loadUsers]);
 
-  const handleDelete = async () => {
+  const handleStatusChange = async () => {
     if (!selectedUser) return;
 
     try {
       setIsSubmitting(true);
-      await usersAPI.delete(selectedUser.id);
+      const nextStatus = statusAction === 'reactivate';
+      await usersAPI.update(selectedUser.id, { isActive: nextStatus });
 
       showToast({
-        message: 'Utilisateur supprimé avec succès',
+        message:
+          statusAction === 'reactivate'
+            ? 'Utilisateur réactivé avec succès'
+            : 'Utilisateur désactivé avec succès',
         variant: 'success',
       });
 
-      setIsDeleteModalOpen(false);
+      setIsStatusModalOpen(false);
       setSelectedUser(null);
       await loadUsers();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Erreur lors de la suppression de l'utilisateur";
+          : "Erreur lors de la mise à jour du statut de l'utilisateur";
       showToast({
         message: errorMessage,
         variant: 'error',
@@ -84,9 +91,16 @@ export default function UsersPage() {
     }
   };
 
-  const openDeleteModal = (user: UserListItem) => {
+  const openDeactivateModal = (user: UserListItem) => {
     setSelectedUser(user);
-    setIsDeleteModalOpen(true);
+    setStatusAction('deactivate');
+    setIsStatusModalOpen(true);
+  };
+
+  const openReactivateModal = (user: UserListItem) => {
+    setSelectedUser(user);
+    setStatusAction('reactivate');
+    setIsStatusModalOpen(true);
   };
 
   const handleFilter = (filters: Record<string, unknown>) => {
@@ -143,22 +157,33 @@ export default function UsersPage() {
           onManagePermissions={user =>
             router.push(`/${locale}/settings/users/${user.id}/permissions`)
           }
-          onDelete={openDeleteModal}
+          onDeactivate={openDeactivateModal}
+          onReactivate={openReactivateModal}
           onFilter={handleFilter}
         />
 
         <ConfirmModal
-          isOpen={isDeleteModalOpen}
+          isOpen={isStatusModalOpen}
           onClose={() => {
-            setIsDeleteModalOpen(false);
+            setIsStatusModalOpen(false);
             setSelectedUser(null);
           }}
-          onConfirm={handleDelete}
-          title="Supprimer l'utilisateur"
-          message={`Êtes-vous sûr de vouloir supprimer l'utilisateur "${selectedUser?.username}" ? Cette action est irréversible.`}
-          confirmText="Supprimer"
+          onConfirm={handleStatusChange}
+          title={
+            statusAction === 'reactivate'
+              ? "Réactiver l'utilisateur"
+              : "Désactiver l'utilisateur"
+          }
+          message={
+            statusAction === 'reactivate'
+              ? `Êtes-vous sûr de vouloir réactiver l'utilisateur "${selectedUser?.username}" ?`
+              : `Êtes-vous sûr de vouloir désactiver l'utilisateur "${selectedUser?.username}" ? Il ne pourra plus accéder à l'application.`
+          }
+          confirmText={
+            statusAction === 'reactivate' ? 'Réactiver' : 'Désactiver'
+          }
           cancelText="Annuler"
-          variant="danger"
+          variant={statusAction === 'reactivate' ? 'info' : 'danger'}
           isLoading={isSubmitting}
         />
       </div>

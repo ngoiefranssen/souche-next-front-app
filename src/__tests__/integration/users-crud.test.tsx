@@ -55,6 +55,7 @@ const mockUsers: UserListItem[] = [
     username: 'johndoe',
     firstName: 'John',
     lastName: 'Doe',
+    isActive: true,
     profilePhoto: '/images/john.jpg',
     profile: {
       id: 1,
@@ -71,6 +72,7 @@ const mockUsers: UserListItem[] = [
     username: 'janesmith',
     firstName: 'Jane',
     lastName: 'Smith',
+    isActive: true,
     profilePhoto: '/images/jane.jpg',
     profile: {
       id: 2,
@@ -99,6 +101,7 @@ const newUser: User = {
   username: 'bobwilson',
   firstName: 'Bob',
   lastName: 'Wilson',
+  isActive: true,
   phone: '+33612345678',
   profilePhoto: '/images/bob.jpg',
   salary: 50000,
