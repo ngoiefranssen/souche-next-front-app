@@ -17,31 +17,44 @@ const menuItems: SettingsSidebarItem[] = [
     key: 'users',
     icon: Users,
     href: '/settings/users',
+    permission: 'users:read',
   },
   {
     key: 'roles',
     icon: ShieldCheck,
     href: '/settings/roles',
+    permission: 'roles:read',
+    children: [
+      {
+        key: 'rolesPermissions',
+        href: '/settings/roles/permissions',
+        permission: 'permissions:update',
+      },
+    ],
   },
   {
     key: 'profiles',
     icon: UserCog,
     href: '/settings/profiles',
+    permission: 'profiles:read',
   },
   {
     key: 'employmentStatus',
     icon: Briefcase,
     href: '/settings/employment-status',
+    permission: 'employment-status:read',
   },
   {
     key: 'permissions',
     icon: KeyRound,
     href: '/settings/permissions',
+    permission: 'permissions:read',
   },
   {
     key: 'audit',
     icon: History,
     href: '/settings/audit',
+    permission: 'audit:read',
   },
 ];
 

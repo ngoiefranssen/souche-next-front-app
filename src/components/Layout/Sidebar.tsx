@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { AlignJustify, LineChart, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { usePermission } from '@/hooks/usePermission';
 
 interface SidebarItem {
   key: 'dashboard';
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations('sidebar');
+  const { hasAnyPermission, loading } = usePermission();
 
   const pathWithoutLocale =
     pathname.replace(/^\/(en|fr|ar)(?=\/|$)/, '') || '/';
@@ -37,6 +39,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const withLocale = (href: string) => `/${locale}${href}`;
   const isActive = (href: string) =>
     pathWithoutLocale === href || pathWithoutLocale.startsWith(`${href}/`);
+  const canAccessSettings = hasAnyPermission([
+    'users:read',
+    'roles:read',
+    'profiles:read',
+    'employment-status:read',
+    'permissions:read',
+    'audit:read',
+  ]);
 
   return (
     <>
@@ -100,21 +110,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           })}
         </nav>
 
-        <div className="mt-auto flex w-full flex-col items-center pb-[2px] pt-[4px]">
-          <Link
-            href={withLocale('/settings/users')}
-            className="group flex w-[70px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-[10px] px-[4px] py-[5px] text-center transition-colors duration-150 hover:bg-white/10"
-            onClick={onClose}
-          >
-            <Settings
-              className="h-[14px] w-[14px] text-white/90 group-hover:text-white"
-              strokeWidth={2}
-            />
-            <span className="max-w-[64px] font-serif text-[10px] font-medium leading-[1.05] tracking-[0.01em] text-white/90 group-hover:text-white">
-              {t('settings')}
-            </span>
-          </Link>
-        </div>
+        {!loading && canAccessSettings ? (
+          <div className="mt-auto flex w-full flex-col items-center pb-[2px] pt-[4px]">
+            <Link
+              href={withLocale('/settings')}
+              className="group flex w-[70px] min-h-[44px] flex-col items-center justify-center gap-[4px] rounded-[10px] px-[4px] py-[5px] text-center transition-colors duration-150 hover:bg-white/10"
+              onClick={onClose}
+            >
+              <Settings
+                className="h-[14px] w-[14px] text-white/90 group-hover:text-white"
+                strokeWidth={2}
+              />
+              <span className="max-w-[64px] font-serif text-[10px] font-medium leading-[1.05] tracking-[0.01em] text-white/90 group-hover:text-white">
+                {t('settings')}
+              </span>
+            </Link>
+          </div>
+        ) : null}
       </aside>
     </>
   );

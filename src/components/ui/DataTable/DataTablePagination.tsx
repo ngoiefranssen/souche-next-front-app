@@ -15,6 +15,7 @@ export const DataTablePagination: React.FC<PaginationConfig> = ({
   const startItem = hasData ? (page - 1) * limit + 1 : 0;
   const endItem = hasData ? Math.min(page * limit, total) : 0;
   const limitOptions = [
+    { value: 5, label: '5 / page' },
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },

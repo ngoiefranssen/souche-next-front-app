@@ -31,7 +31,7 @@ export default function AuditPage() {
   const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
   const [action, setAction] = useState('');
   const [severity, setSeverity] = useState('');

@@ -19,7 +19,16 @@ import { profilesAPI } from '@/lib/api/settings/profiles';
 import { employmentStatusAPI } from '@/lib/api/settings/employment-status';
 import type { Profile } from '@/types/profile';
 import type { EmploymentStatus } from '@/types/employment-status';
-import { Mail, User, Lock, Phone, DollarSign, UserCircle } from 'lucide-react';
+import {
+  Mail,
+  User,
+  Lock,
+  Phone,
+  DollarSign,
+  UserCircle,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 
 interface UserFormProps {
   /**
@@ -62,7 +71,7 @@ interface UserFormProps {
  * Il contient >4 champs donc il est conçu pour être utilisé sur une page dédiée.
  *
  * Champs:
- * - email, username, password (création uniquement)
+ * - email, username, password, confirmPassword (création uniquement)
  * - firstName, lastName, phone
  * - profilePhoto (upload avec prévisualisation)
  * - salary, hireDate
@@ -85,6 +94,7 @@ export const UserForm: React.FC<UserFormProps> = ({
     email: initialData?.email ?? '',
     username: initialData?.username ?? '',
     password: '',
+    confirmPassword: '',
     firstName: initialData?.firstName ?? '',
     lastName: initialData?.lastName ?? '',
     phone: initialData?.phone ?? '',
@@ -106,6 +116,8 @@ export const UserForm: React.FC<UserFormProps> = ({
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     initialData?.profilePhoto || null
   );
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -143,8 +155,9 @@ export const UserForm: React.FC<UserFormProps> = ({
   const handleFormSubmit = async (data: UserFormInput) => {
     try {
       if (isEditMode) {
-        const { password, profilePhoto, ...updateData } = data;
+        const { password, confirmPassword, profilePhoto, ...updateData } = data;
         void password;
+        void confirmPassword;
         void profilePhoto;
         await onSubmit(updateData, photoFile || undefined);
         return;
@@ -212,17 +225,154 @@ export const UserForm: React.FC<UserFormProps> = ({
           />
 
           {!isEditMode && (
-            <FormField
-              label="Mot de passe"
-              {...register('password')}
-              error={errors.password?.message}
-              icon={<Lock className="w-4 h-4" />}
-              placeholder="••••••••"
-              type="password"
-              required
-              disabled={isSubmitting}
-              autoComplete="new-password"
-            />
+            <>
+              <div className="w-full">
+                <label
+                  htmlFor="user-password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Mot de passe<span className="text-red-600 ml-1">*</span>
+                </label>
+
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
+
+                  <input
+                    id="user-password"
+                    {...register('password')}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="new-password"
+                    className={`
+                      w-full px-3 py-2 pl-10 pr-10
+                      border rounded-lg
+                      text-gray-900 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-offset-0
+                      transition-all duration-200
+                      disabled:bg-gray-100 disabled:cursor-not-allowed
+                      ${
+                        errors.password?.message
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-300 focus:ring-[#2B6A8E] focus:border-[#2B6A8E]'
+                      }
+                    `}
+                    aria-invalid={errors.password?.message ? 'true' : 'false'}
+                    aria-describedby={
+                      errors.password?.message
+                        ? 'user-password-error'
+                        : undefined
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(previous => !previous)}
+                    className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                    aria-label={
+                      showPassword
+                        ? 'Masquer le mot de passe'
+                        : 'Afficher le mot de passe'
+                    }
+                  >
+                    {showPassword ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+
+                {errors.password?.message && (
+                  <p
+                    id="user-password-error"
+                    className="mt-1 text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="user-confirm-password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Confirmer le mot de passe
+                  <span className="text-red-600 ml-1">*</span>
+                </label>
+
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
+
+                  <input
+                    id="user-confirm-password"
+                    {...register('confirmPassword')}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="new-password"
+                    className={`
+                      w-full px-3 py-2 pl-10 pr-10
+                      border rounded-lg
+                      text-gray-900 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-offset-0
+                      transition-all duration-200
+                      disabled:bg-gray-100 disabled:cursor-not-allowed
+                      ${
+                        errors.confirmPassword?.message
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-300 focus:ring-[#2B6A8E] focus:border-[#2B6A8E]'
+                      }
+                    `}
+                    aria-invalid={
+                      errors.confirmPassword?.message ? 'true' : 'false'
+                    }
+                    aria-describedby={
+                      errors.confirmPassword?.message
+                        ? 'user-confirm-password-error'
+                        : undefined
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword(previous => !previous)
+                    }
+                    className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                    aria-label={
+                      showConfirmPassword
+                        ? 'Masquer le mot de passe'
+                        : 'Afficher le mot de passe'
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+
+                {errors.confirmPassword?.message && (
+                  <p
+                    id="user-confirm-password-error"
+                    className="mt-1 text-sm text-red-600"
+                    role="alert"
+                  >
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>

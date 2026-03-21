@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Schema de validation pour la création d'un utilisateur
  * Valide tous les champs requis avec les règles métier appropriées
  */
-export const userCreateSchema = z.object({
+const userCreateBaseSchema = z.object({
   email: z
     .string()
     .min(1, "L'email est requis")
@@ -27,6 +27,10 @@ export const userCreateSchema = z.object({
       'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre'
     ),
 
+  confirmPassword: z
+    .string()
+    .min(1, 'La confirmation du mot de passe est requise'),
+
   firstName: z
     .string()
     .min(2, 'Le prénom doit contenir au moins 2 caractères')
@@ -40,8 +44,8 @@ export const userCreateSchema = z.object({
   phone: z
     .string()
     .regex(
-      /^\+?[0-9]{10,15}$/,
-      'Le numéro de téléphone doit contenir entre 10 et 15 chiffres'
+      /^\+?[0-9]{8,20}$/,
+      'Le numéro de téléphone doit contenir entre 8 et 20 chiffres'
     ),
 
   salary: z
@@ -67,13 +71,21 @@ export const userCreateSchema = z.object({
     .positive("L'ID du profil doit être positif"),
 });
 
+export const userCreateSchema = userCreateBaseSchema.refine(
+  data => data.password === data.confirmPassword,
+  {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  }
+);
+
 /**
  * Schema de validation pour la mise à jour d'un utilisateur
  * Tous les champs sont optionnels sauf le mot de passe qui est exclu
  */
-export const userUpdateSchema = userCreateSchema
+export const userUpdateSchema = userCreateBaseSchema
   .partial()
-  .omit({ password: true });
+  .omit({ password: true, confirmPassword: true });
 
 /**
  * Schema de validation pour le changement de mot de passe
