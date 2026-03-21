@@ -11,7 +11,7 @@ import {
   startSessionTimeout,
   stopMonitoring as stopSessionTimeout,
 } from '@/utils/auth/sessionTimeout';
-import { removeAuthToken } from '@/utils/auth/tokenManager';
+import { removeAuthToken, setAuthToken } from '@/utils/auth/tokenManager';
 import React from 'react';
 
 interface AuthContextType {
@@ -128,7 +128,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Stocker le token et l'utilisateur dans localStorage
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth-token', response.data?.accessToken);
+        if (response.data?.accessToken) {
+          setAuthToken(response.data.accessToken);
+          localStorage.setItem('auth-token', response.data.accessToken);
+        }
         localStorage.setItem('user-data', JSON.stringify(response.data.user));
       }
 
@@ -153,36 +156,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = async () => {
+    // Stop token refresh monitoring
+    stopTokenRefresh();
+
+    // Stop session timeout monitoring
+    stopSessionTimeout();
+
     try {
-      // Stop token refresh monitoring
-      stopTokenRefresh();
-
-      // Stop session timeout monitoring
-      stopSessionTimeout();
-
       await authAPI.logout();
-      setUser(null);
-
-      // Supprimer le token des en-têtes
-      apiClient.removeAuthToken();
-
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('user-data');
-        // Clear permissions cache on logout
-        localStorage.removeItem('user-permissions');
-        localStorage.removeItem('user-permissions-timestamp');
-      }
-
-      // Trigger permission clear after logout
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('auth:logout'));
-      }
-
-      router.push('/login');
     } catch (error) {
-      throw error;
+      console.warn('[Auth] Logout API failed, fallback to local logout', error);
     }
+
+    setUser(null);
+
+    // Supprimer le token des en-têtes
+    apiClient.removeAuthToken();
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-token');
+      localStorage.removeItem('user-data');
+      // Clear permissions cache on logout
+      localStorage.removeItem('user-permissions');
+      localStorage.removeItem('user-permissions-timestamp');
+    }
+
+    // Trigger permission clear after logout
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('auth:logout'));
+    }
+
+    router.push('/login');
   };
 
   const value = {

@@ -1,6 +1,7 @@
 import { ENDPOINTS } from '@/lib/endpoints/auth/auth';
 import { apiClient } from '../client';
 import { API_CONFIG } from '../config';
+import { getAuthToken } from '@/utils/auth/tokenManager';
 
 export interface LoginCredentials {
   email: string;
@@ -62,24 +63,42 @@ export const authAPI = {
   },
 
   async logout(): Promise<void> {
-    try {
-      // Appeler l'API de logout sans attendre de réponse JSON
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH?.LOGOUT}`,
-        {
-          method: 'POST',
-          headers: API_CONFIG.HEADERS,
-          credentials: 'include',
-        }
-      );
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('Authentication token is required for logout');
+    }
 
-      if (!response.ok) {
-        throw new Error(`Logout failed with status: ${response.status}`);
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const logoutEndpoints = [
+      ENDPOINTS.AUTH?.LOGOUT,
+      ENDPOINTS.AUTH?.LOGOUT_LEGACY,
+    ].filter(Boolean) as string[];
+
+    for (const endpoint of logoutEndpoints) {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        return;
       }
 
-      return;
-    } catch (error) {
-      throw error;
+      // Essayer l'endpoint legacy si le nouveau n'existe pas encore.
+      if (response.status === 404) {
+        continue;
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Logout requires a valid authentication token');
+      }
+
+      throw new Error(`Logout failed with status: ${response.status}`);
     }
   },
 
